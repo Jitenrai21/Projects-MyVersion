@@ -1,0 +1,38 @@
+quick-draw-game/
+│
+├── frontend/                    # Frontend code (HTML, CSS, JavaScript)
+│   ├── assets/                  # Static assets (images, sounds, etc.)
+│   │   └── logo.png      
+│   ├── css/                     # CSS styles
+│   │   └── main.css           
+│   ├── index.html               # Main HTML page (game UI)
+│   └── script.js                # Main JavaScript file (game logic)
+│
+├── backend/
+│   └── app/
+│       ├── __init__.py            # Initializes the FastAPI app
+│       ├── routes/                # API route handlers
+│       │   ├── __init__.py
+│       │   └── drawing.py         # API route for drawing recognition
+│       ├── models/                # ML model logic
+│       │   ├── __init__.py
+│       │   └── drawing_model.py   # Logic for loading and predicting with the ML model
+│       └── main.py 
+│
+├── model_training/
+│        ├── data/
+│            └── processed_data/            # Preprocessed data (images, labels)
+                    ├── .... # This folder consists of both the .npy and .csv files
+                    └── labels.csv
+│        ├── scripts/
+│        │   ├── preprocess_data.py         # Script for preprocessing raw data
+│        ├── models/
+│        │   ├── cnn_model.py               # Define CNN architecture
+│        │   └── train_model.py             # Train and evaluate the model
+│        ├── requirements.txt               # Dependencies for training
+│        └── README.md                      # Documentation for model training setup
+│
+├── .gitignore                   # Git ignore file
+├── Project_Structure            
+├── requirements.txt             # Backend dependencies (for example, Flask/FastAPI)
+└── README.md  
