@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>� QuickDraw - 21 Classes!</title>
+    <link rel="stylesheet" href="css/main.css">
+    <meta name="description" content="AI-powered drawing game - Can you draw objects fast enough for the AI to recognize from 21 different categories?">
+</head>
+<body>
+    <!-- Start Screen -->
+    <div id="start-screen" class="screen">
+        <h1>� QuickDraw!</h1>
+        <p class="subtitle">21 Different Objects Edition</p>
+        <p id="instruction">Draw the object: <span id="object-placeholder">🍎 Apple</span></p>
+        <p class="game-info">
+            ⏱️ You have 30 seconds to draw!<br>
+            🎯 Make it clear so the AI can recognize it!<br>
+            ✏️ Use your mouse or finger to draw<br>
+            🏆 21 possible classes to master!
+        </p>
+        <div class="classes-preview">
+            <small>
+                <strong>Available Objects:</strong><br>
+                ✈️ 🍎 🍌 🚲 🐦 🚗 🐱 🪑 🕐 🐶 🐘 🐟 🌸 🏠 🍦 ✏️ 🍕 🕷️ 🌳 ☂️ ⏰
+            </small>
+        </div>
+        <button id="start-button">Start Game</button>
+        <div class="controls-hint">
+            <small>💡 Tip: Press 'C' to clear, 'Enter' to start/restart</small>
+        </div>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="game-screen" class="screen">
+        <h1>� QuickDraw!</h1>
+        <div class="game-header">
+            <p class="draw-instruction">Draw: <span id="current-object">🍎 Apple</span></p>
+            <p id="timer" class="timer">Time left: <span id="time-left">30</span> seconds</p>
+        </div>
+        <canvas id="drawing-canvas"></canvas>
+        <div id="controls">
+            <button id="clear-button">🗑️ Clear</button>
+        </div>
+        <div class="drawing-tips">
+            <small>💡 Make your drawing clear and recognizable!</small>
+        </div>
+    </div>
+
+    <!-- Post-Game Screen -->
+    <div id="post-game-screen" class="screen">
+        <h1>⏰ Time's Up!</h1>
+        <div id="model-guess" class="result-display">
+            <div style="color: #666;">🤔 Analyzing your drawing...</div>
+        </div>
+        <div class="game-controls">
+            <button id="restart-button">🔄 Play Again</button>
+        </div>
+        <div class="score-info">
+            <small>🎯 Try to get the AI to recognize your drawings!</small>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="game-footer">
+        <p>Powered by TensorFlow & FastAPI | AI Model trained on QuickDraw dataset</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

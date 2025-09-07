@@ -20,19 +20,17 @@ quick-draw-game/
 │       └── main.py 
 │
 ├── model_training/
-│        ├── data/
-│            └── processed_data/            # Preprocessed data (images, labels)
-                    ├── .... # This folder consists of both the .npy and .csv files
-                    └── labels.csv
-│        ├── scripts/
-│        │   ├── preprocess_data.py         # Script for preprocessing raw data
+│        ├── Dataset-TrainValidation/
+│        │   ├── train           
+│        │   └── validation
 │        ├── models/
-│        │   ├── cnn_model.py               # Define CNN architecture
-│        │   └── train_model.py             # Train and evaluate the model
-│        ├── requirements.txt               # Dependencies for training
-│        └── README.md                      # Documentation for model training setup
+│        │   └── QuickDraw.h5
+│        ├── LoadData.py
+│        └── model_training.ipynb
 │
 ├── .gitignore                   # Git ignore file
+├── features            
+├── labels            
 ├── Project_Structure            
 ├── requirements.txt             # Backend dependencies (for example, Flask/FastAPI)
 └── README.md  
