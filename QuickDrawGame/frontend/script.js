@@ -76,13 +76,20 @@ async function getNewObject() {
             const emoji = data.emoji;
             objectPlaceholder.textContent = `${emoji} ${currentObject.charAt(0).toUpperCase() + currentObject.slice(1)}`;
         } else {
-            // Fallback to local selection
-            const objects = ['apple', 'banana', 'car', 'cat', 'dog', 'house', 'tree', 'bird'];
-            currentObject = objects[Math.floor(Math.random() * objects.length)];
+            // Fallback to local selection from 21 classes
+            const objects = [
+                'airplane', 'alarm clock', 'apple', 'banana', 'bicycle', 
+                'bird', 'car', 'cat', 'chair', 'clock',
+                'dog', 'elephant', 'fish', 'flower', 'house',
+                'ice cream', 'pencil', 'pizza', 'spider', 'tree', 'umbrella'
+            ];
             const emojiMap = {
-                'apple': '🍎', 'banana': '🍌', 'car': '🚗', 'cat': '🐱', 
-                'dog': '🐶', 'house': '🏠', 'tree': '🌳', 'bird': '🐦'
+                'airplane': '✈️', 'alarm clock': '⏰', 'apple': '🍎', 'banana': '🍌', 'bicycle': '🚲',
+                'bird': '🐦', 'car': '🚗', 'cat': '🐱', 'chair': '🪑', 'clock': '🕐',
+                'dog': '🐶', 'elephant': '🐘', 'fish': '🐟', 'flower': '🌸', 'house': '🏠',
+                'ice cream': '🍦', 'pencil': '✏️', 'pizza': '🍕', 'spider': '🕷️', 'tree': '🌳', 'umbrella': '☂️'
             };
+            currentObject = objects[Math.floor(Math.random() * objects.length)];
             const emoji = emojiMap[currentObject] || '❓';
             objectPlaceholder.textContent = `${emoji} ${currentObject.charAt(0).toUpperCase() + currentObject.slice(1)}`;
         }
@@ -284,13 +291,17 @@ async function sendDrawingData() {
 
 // Display detailed prediction results
 function displayPredictionResults(data) {
+    console.log("🔍 Raw prediction data received:", data); // Debug log
+    
     const prediction = data.prediction;
     const expectedObject = data.expected_object;
     const isCorrect = data.is_correct;
     const confidence = Math.round(data.confidence * 100);
     const topPredictions = data.top_predictions || {};
 
-    // Get emojis
+    console.log("🎯 Processed data:", { prediction, expectedObject, isCorrect, confidence, topPredictions }); // Debug log
+
+    // Get emojis for all 21 classes
     const emojiMap = {
         'airplane': '✈️', 'alarm clock': '⏰', 'apple': '🍎', 'banana': '🍌', 'bicycle': '🚲',
         'bird': '🐦', 'car': '🚗', 'cat': '🐱', 'chair': '🪑', 'clock': '🕐',
@@ -300,49 +311,93 @@ function displayPredictionResults(data) {
     
     const predEmoji = emojiMap[prediction] || '❓';
     const expectedEmoji = emojiMap[expectedObject] || '❓';
-    const resultEmoji = isCorrect ? '�' : '😅';
+    const resultEmoji = isCorrect ? '🎉' : '😅';
 
-    // Create top predictions HTML
+    console.log("🎨 Emojis:", { predEmoji, expectedEmoji, resultEmoji }); // Debug log
+
+    // Create top predictions HTML with better styling for 21 classes
     let topPredictionsHTML = '';
     const topEntries = Object.entries(topPredictions).slice(0, 3);
     if (topEntries.length > 0) {
         topPredictionsHTML = `
-            <div style="background: #f5f5f5; padding: 10px; border-radius: 8px; margin-bottom: 10px;">
-                <small><strong>Top 3 Guesses:</strong></small><br>
-                ${topEntries.map(([className, conf]) => {
+            <div style="background: linear-gradient(135deg, #f8f9fa, #e9ecef); padding: 15px; border-radius: 12px; margin: 15px 0; border: 1px solid #dee2e6;">
+                <div style="font-weight: bold; color: #495057; margin-bottom: 8px;">🏆 AI's Top 3 Guesses:</div>
+                ${topEntries.map(([className, conf], index) => {
                     const emoji = emojiMap[className] || '❓';
                     const percentage = Math.round(conf * 100);
-                    return `<div style="margin: 2px 0;">${emoji} ${className}: ${percentage}%</div>`;
+                    const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : '🥉';
+                    const isWinner = className === prediction;
+                    return `
+                        <div style="margin: 5px 0; padding: 5px; ${isWinner ? 'background: rgba(76, 175, 80, 0.1); border-radius: 6px; font-weight: bold;' : ''}">
+                            ${medal} ${emoji} ${className.charAt(0).toUpperCase() + className.slice(1)}: ${percentage}%
+                        </div>
+                    `;
                 }).join('')}
+            </div>
+        `;
+    } else {
+        // Fallback if no top predictions available
+        topPredictionsHTML = `
+            <div style="background: #fff3cd; padding: 10px; border-radius: 8px; margin: 10px 0; border: 1px solid #ffeaa7;">
+                <small>🤖 AI Analysis: Single prediction made</small>
             </div>
         `;
     }
 
-    // Create result HTML
+    // Enhanced result HTML - COMPLETELY NEW VERSION
     const resultHTML = `
-        <div style="text-align: center; padding: 20px;">
-            <h2 style="margin-bottom: 15px;">
-                ${resultEmoji} ${isCorrect ? 'Correct!' : 'Not quite...'}
+        <div style="text-align: center; padding: 25px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: linear-gradient(135deg, #f8f9fa, #ffffff); border-radius: 20px;">
+            <div style="font-size: 4em; margin-bottom: 15px;">${resultEmoji}</div>
+            <h2 style="margin-bottom: 25px; color: ${isCorrect ? '#28a745' : '#6c757d'}; font-size: 2em; font-weight: 700;">
+                ${isCorrect ? '🎯 PERFECT MATCH!' : '🎨 NICE TRY!'}
             </h2>
             
-            <div style="margin-bottom: 15px;">
-                <strong>Expected:</strong> ${expectedEmoji} ${expectedObject.charAt(0).toUpperCase() + expectedObject.slice(1)}<br>
-                <strong>I guessed:</strong> ${predEmoji} ${prediction.charAt(0).toUpperCase() + prediction.slice(1)}
-            </div>
+            <div style="background: #ffffff; padding: 25px; border-radius: 15px; margin: 20px 0; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 2px solid #e9ecef;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                    <div style="text-align: center; padding: 15px; background: #e3f2fd; border-radius: 10px;">
+                        <div style="font-weight: bold; color: #1976d2; margin-bottom: 5px;">🎯 TARGET</div>
+                        <div style="font-size: 2em;">${expectedEmoji}</div>
+                        <div style="font-size: 1.1em; font-weight: 600; color: #1976d2;">${expectedObject.toUpperCase()}</div>
+                    </div>
+                    <div style="text-align: center; padding: 15px; background: #e8f5e8; border-radius: 10px;">
+                        <div style="font-weight: bold; color: #388e3c; margin-bottom: 5px;">🤖 AI GUESS</div>
+                        <div style="font-size: 2em;">${predEmoji}</div>
+                        <div style="font-size: 1.1em; font-weight: 600; color: #388e3c;">${prediction.toUpperCase()}</div>
+                    </div>
+                </div>
 
-            <div style="margin-bottom: 15px; color: ${confidence > 50 ? '#4CAF50' : confidence > 25 ? '#FF9800' : '#F44336'}">
-                <strong>Confidence: ${confidence}%</strong>
+                <div style="margin: 25px 0;">
+                    <div style="font-size: 1.3em; font-weight: bold; margin-bottom: 10px; color: ${confidence > 40 ? '#28a745' : confidence > 20 ? '#ffc107' : '#dc3545'};">
+                        🎯 CONFIDENCE: ${confidence}%
+                    </div>
+                    <div style="background: #e9ecef; height: 12px; border-radius: 6px; overflow: hidden;">
+                        <div style="background: ${confidence > 40 ? '#28a745' : confidence > 20 ? '#ffc107' : '#dc3545'}; height: 100%; width: ${confidence}%; transition: width 1s ease; border-radius: 6px;"></div>
+                    </div>
+                </div>
             </div>
 
             ${topPredictionsHTML}
 
-            <div style="color: #666; font-style: italic;">
-                ${data.message || 'Thanks for playing!'}
+            <div style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 20px; border-radius: 15px; margin: 20px 0;">
+                <div style="font-size: 1.1em; line-height: 1.5;">
+                    ${isCorrect 
+                        ? "🌟 AMAZING! Your drawing was crystal clear!" 
+                        : confidence > 30 
+                            ? `🎨 Great effort! The AI was ${confidence}% sure. Try emphasizing key features!`
+                            : "🤔 Tricky one! Remember to draw the most recognizable parts clearly!"
+                    }
+                </div>
+            </div>
+
+            <div style="background: rgba(102, 126, 234, 0.1); padding: 15px; border-radius: 10px; color: #667eea; font-weight: 600;">
+                🎮 QuickDraw Challenge: 21 Object Categories Available!
             </div>
         </div>
     `;
 
+    console.log("✅ Setting result HTML"); // Debug log
     modelGuessDisplay.innerHTML = resultHTML;
+    console.log("✅ Result HTML set successfully"); // Debug log
 }
 
 // Restart game
