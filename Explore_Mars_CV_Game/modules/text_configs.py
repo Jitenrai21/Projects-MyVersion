@@ -43,8 +43,8 @@ def display_text_with_background(surface, text, font_size=30):
     surface.blit(background, (text_x - 10, text_y - 10))  # Offset the background for padding
     surface.blit(text_surface, (text_x, text_y))  # Place text on top of the background
 
-# Function to display guideline text with a curved background and optional image
-def display_text_with_logo_image(surface, text, image, font_size=60):
+# Function to display guideline text with a curved background
+def display_text_with_logo_image(surface, text, font_size=60):
     # Set up the font and text
     font = pygame.font.SysFont("Impact", font_size)
     text_surface = font.render(text, True, TEXT_COLOR)
@@ -52,15 +52,13 @@ def display_text_with_logo_image(surface, text, image, font_size=60):
     # Get the width and height of the text
     text_width, text_height = text_surface.get_size()
 
-    # Get the size of the image
-    image_width, image_height = image.get_size()
+    # Set padding around the text for the background
+    horizontal_padding = 20
+    vertical_padding = 10
 
-    # Set padding between the text and the image
-    padding = 10
-
-    # Calculate the background size (text width + image width + padding)
-    background_width = text_width + image_width + padding
-    background_height = max(text_height, image_height) + 10  # Ensure enough space for both text and image
+    # Calculate the background size with proper padding
+    background_width = text_width + (horizontal_padding * 2)
+    background_height = text_height + (vertical_padding * 2)
 
     # Calculate the position of the background to center it on the screen
     background_x = (screen_width - background_width) // 2
@@ -68,18 +66,13 @@ def display_text_with_logo_image(surface, text, image, font_size=60):
 
     # Create the semi-transparent background
     background_color = (0, 0, 0, 50)  # Black with transparency
-    background = pygame.Surface((background_width + 10, background_height), pygame.SRCALPHA)
+    background = pygame.Surface((background_width, background_height), pygame.SRCALPHA)
     background.fill(background_color)
 
     # Draw the background
     surface.blit(background, (background_x, background_y))
 
-    # Position the image inside the rectangle
-    image_x = background_x + text_width + padding  # Position image next to the text
-    image_y = background_y + (background_height - image_height) // 2  # Center the image vertically within the background
-    surface.blit(image, (image_x, image_y))
-
-    # Position the text inside the rectangle
-    text_x = background_x + 20  # Shift text by padding_left
-    text_y = background_y + (background_height - text_height) // 2  # Center text vertically within the background
+    # Position the text at the center of the background rectangle
+    text_x = background_x + (background_width - text_width) // 2
+    text_y = background_y + (background_height - text_height) // 2
     surface.blit(text_surface, (text_x, text_y))

@@ -620,7 +620,7 @@ def main_game():
         img_path = os.path.join(assets_dir, 'Logo.png')
         image = pygame.image.load(img_path).convert_alpha()  # Load the image
         image = pygame.transform.smoothscale(image, (100, 100))  # Resize image if needed
-        display_text_with_logo_image(screen, "Explore and analyze all the distinct objects.", image, font_size=40)
+        display_text_with_logo_image(screen, "Explore and analyze all the distinct objects.", font_size=40)
         
         if is_moving:
             hover_offset = 0  # Prevent hovering when moving
@@ -645,12 +645,109 @@ def main_game():
         # Calculate analyzed zones
         analyzed_zones = len(analyzed_stones) + len(analyzed_pitholes)
 
-        # Display the analyzed zones progress (e.g., "Analyzed: 0/7 zones")
-        progress_text = f"Analyzed: {analyzed_zones}/{total_zones} zones"
-        progress_surface = font_sub.render(progress_text, True, WHITE)
-        progress_x = 20
-        progress_y = 180  # Place it near the top
-        screen.blit(progress_surface, (progress_x, progress_y))
+        # Define consistent width for both camera and progress bar
+        ui_element_width = 280
+        ui_padding = 15
+        ui_x_position = ui_padding  # Consistent left alignment
+
+        # If webcam is enabled, display the webcam feed at top-left corner
+        if webcam_enabled:
+            ret, frame = cap.read()
+            if ret:
+                frame = cv2.flip(frame, 1)  # Flip horizontally for mirroring
+                frame = cv2.rotate(frame, cv2.ROTATE_90_COUNTERCLOCKWISE)
+                frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                frame_surface = pygame.surfarray.make_surface(frame_rgb)
+                
+                # Webcam display with consistent width
+                webcam_width = ui_element_width
+                webcam_height = int(webcam_width * 0.75)  # 4:3 aspect ratio
+                border_thickness = 1
+                
+                # Position at top-left with consistent alignment
+                webcam_x = ui_x_position
+                webcam_y = ui_padding
+                
+                # Create semi-transparent background for the webcam area
+                webcam_bg = pygame.Surface((webcam_width + (ui_padding * 2), 
+                                         webcam_height + ui_padding + 35), pygame.SRCALPHA)
+                webcam_bg.fill((0, 0, 0, 120))  # Semi-transparent black background
+                
+                # Draw the background
+                screen.blit(webcam_bg, (webcam_x - ui_padding, webcam_y - ui_padding))
+                
+                # Add title for webcam feed - centered
+                webcam_font = pygame.font.SysFont("Impact", 22)
+                webcam_title = webcam_font.render("Camera Feed", True, (255, 255, 255))
+                title_x = webcam_x + (webcam_width - webcam_title.get_width()) // 2
+                screen.blit(webcam_title, (title_x, webcam_y - ui_padding + 5))
+                
+                # Scale and display the webcam frame
+                frame_surface = pygame.transform.scale(frame_surface, (webcam_width, webcam_height))
+                
+                # Draw border around webcam feed
+                border_rect = pygame.Rect(webcam_x - border_thickness, 
+                                        webcam_y + 25 - border_thickness, 
+                                        webcam_width + (border_thickness * 2), 
+                                        webcam_height + (border_thickness * 2))
+                pygame.draw.rect(screen, (255, 255, 255), border_rect, border_thickness)
+                
+                # Draw the webcam frame
+                screen.blit(frame_surface, (webcam_x, webcam_y + 25))
+                
+                # Calculate progress bar position below webcam with spacing
+                progress_y_offset = webcam_y + webcam_height + 55
+        else:
+            # If webcam is disabled, position progress bar at top
+            progress_y_offset = ui_padding
+
+        # Display the analyzed zones progress with consistent width and alignment
+        progress_text = f"Progress: {analyzed_zones}/{total_zones} zones analyzed"
+        progress_font = pygame.font.SysFont("Impact", 24)
+        progress_surface = progress_font.render(progress_text, True, (255, 255, 255))
+        
+        # Create a styled background with consistent width
+        progress_bg_width = ui_element_width + (ui_padding * 2)
+        progress_bg_height = progress_surface.get_height() + 40  # Extra space for progress bar
+        progress_bg = pygame.Surface((progress_bg_width, progress_bg_height), pygame.SRCALPHA)
+        progress_bg.fill((0, 0, 0, 100))  # Semi-transparent background
+        
+        # Position progress section with consistent alignment
+        progress_x = ui_x_position
+        progress_y = progress_y_offset
+        
+        # Draw background
+        screen.blit(progress_bg, (progress_x - ui_padding, progress_y - 10))
+        
+        # Center the progress text within the consistent width
+        text_x = progress_x + (ui_element_width - progress_surface.get_width()) // 2
+        screen.blit(progress_surface, (text_x, progress_y))
+        
+        # Add a progress bar visualization with consistent width
+        bar_width = ui_element_width - 20  # Slightly smaller than container for padding
+        bar_height = 8
+        bar_x = progress_x + 10  # Center the bar within the container
+        bar_y = progress_y + progress_surface.get_height() + 8
+        
+        # Draw progress bar background
+        progress_bar_bg = pygame.Rect(bar_x, bar_y, bar_width, bar_height)
+        pygame.draw.rect(screen, (60, 60, 60), progress_bar_bg)
+        
+        # Draw progress bar fill
+        if total_zones > 0:
+            fill_width = int((analyzed_zones / total_zones) * bar_width)
+            progress_bar_fill = pygame.Rect(bar_x, bar_y, fill_width, bar_height)
+            # Color gradient based on progress
+            if analyzed_zones == total_zones:
+                bar_color = (0, 255, 0)  # Green when complete
+            elif analyzed_zones > total_zones * 0.5:
+                bar_color = (255, 215, 0)  # Gold when more than half
+            else:
+                bar_color = (255, 100, 100)  # Light red when starting
+            pygame.draw.rect(screen, bar_color, progress_bar_fill)
+        
+        # Draw border around progress bar
+        pygame.draw.rect(screen, (255, 255, 255), progress_bar_bg, 2)
 
         # Process webcam frame
         ret, frame = cap.read()
@@ -777,16 +874,6 @@ def main_game():
                 display_text_with_background(screen, current_fact, 40)
             else:
                 state = "idle"
-        # If webcam is enabled, display the webcam feed
-        if webcam_enabled:
-            ret, frame = cap.read()
-            if ret:
-                frame = cv2.flip(frame, 1)  # Flip horizontally for mirroring
-                frame = cv2.rotate(frame, cv2.ROTATE_90_COUNTERCLOCKWISE)
-                frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                frame_surface = pygame.surfarray.make_surface(frame_rgb)
-                frame_surface = pygame.transform.scale(frame_surface, (200, 150))
-                screen.blit(frame_surface, (0, 0))  # Display the webcam feed
 
         if analyzed_zones == total_zones and state != 'analyzing' and state != 'showing_fact':
             # Call handle_level_complete to process the level complete state
