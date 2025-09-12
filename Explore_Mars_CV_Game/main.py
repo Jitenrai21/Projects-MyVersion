@@ -4,6 +4,7 @@ import mediapipe as mp
 import numpy as np
 import random
 import time
+import math
 from modules.configs import *
 from modules.rover_movement_animation import Particle
 from modules.button import Button
@@ -239,11 +240,14 @@ def toggle_mute(mouse_pos):
         else:
             pygame.mixer.music.set_volume(1)  # Unmute the music
 
-# Define some kid-friendly colors
-TUTORIAL_BG_COLOR = (0, 0, 0, 100)  # Semi-transparent black for background overlay
-COLOR_TEXT = (255, 176, 0)  # Gold for titles
-COLOR_SUBTEXT = (0, 194, 203)   
-COLOR_EMOJI = (241, 213, 128) 
+# Define enhanced color palette for a more appealing UI
+TUTORIAL_BG_COLOR = (0, 0, 0, 120)  # Slightly more opaque background
+COLOR_TITLE = (255, 215, 0)  # Bright gold for main title  
+COLOR_SUBTITLE = (255, 140, 0)  # Orange-gold for subtitle
+COLOR_INSTRUCTION = (100, 200, 255)  # Light blue for instructions
+COLOR_GESTURE_TEXT = (220, 220, 220)  # Light gray for gesture descriptions
+COLOR_START_PROMPT = (0, 255, 150)  # Bright green for start prompt
+COLOR_GLOW = (255, 255, 255, 50)  # Subtle white glow effect 
 
 # Initialize font
 font_main = pygame.font.SysFont("Impact", 70)  # Larger and bold for main title
@@ -251,7 +255,7 @@ font_sub = pygame.font.SysFont("Impact", 40)  # Smaller for subtext
 font_instructions = pygame.font.SysFont("Impact", 35)  # Standard for instructions and gestures
 
 def display_text_with_image(surface, text, image, x, y, font, color):
-    # Render the text
+    # Render the text with subtle glow effect
     text_surface = font.render(text, True, color)
     text_width, text_height = text_surface.get_size()
     image_width, image_height = image.get_size()
@@ -260,7 +264,12 @@ def display_text_with_image(surface, text, image, x, y, font, color):
     total_width = image_width + 10 + text_width  # 10px spacing between image and text
     start_x = x - (total_width // 2)  # Adjust x to center the combined image and text
     
-    # Draw image and text
+    # Create a subtle glow effect for better readability
+    glow_surface = font.render(text, True, (255, 255, 255, 80))  # White glow
+    for offset in [(1, 1), (-1, -1), (1, -1), (-1, 1)]:  # Small offsets for glow
+        surface.blit(glow_surface, (start_x + image_width + 10 + offset[0], y + offset[1]))
+    
+    # Draw image and main text
     surface.blit(image, (start_x, y))
     surface.blit(text_surface, (start_x + image_width + 10, y))  # Text to the right of image
 
@@ -271,18 +280,18 @@ gesture_right_img = load_image("right.png", 50, 50)  # Right arrow image
 gesture_up_img = load_image("up.png", 50, 50)  # Up arrow image
 gesture_down_img = load_image("down.png", 50, 50)  # Down arrow image
 
-# Modified tutorial_text to split the complex gesture line into separate entries
+# Enhanced tutorial_text with improved color scheme
 tutorial_text = [
-    ("Welcome to Mars Rover Exploration!", COLOR_TEXT, font_main),  # Main title
-    ("Explore the Martian landscape and uncover educational facts.", COLOR_TEXT, font_sub),
-    ("Use hand gestures to control the rover.", COLOR_EMOJI, font_instructions),
-    (gesture_fist_img, "Fist gesture: Analyze the zone", WHITE, font_instructions),
-    # Split the complex gesture line into individual entries for clarity
-    (gesture_left_img, "Left: Move left", WHITE, font_instructions),
-    (gesture_right_img, "Right: Move right", WHITE, font_instructions),
-    (gesture_up_img, "Up: Move up", WHITE, font_instructions),
-    (gesture_down_img, "Down: Move down", WHITE, font_instructions),
-    ("Press Space or Enter to start the game.", COLOR_EMOJI, font_sub)
+    ("Welcome to Mars Rover Exploration!", COLOR_TITLE, font_main),  # Bright gold main title
+    ("Explore the Martian landscape and uncover educational facts.", COLOR_SUBTITLE, font_sub),  # Orange subtitle
+    ("Use hand gestures to control the rover.", COLOR_INSTRUCTION, font_instructions),  # Light blue instruction
+    (gesture_fist_img, "Fist gesture: Analyze the zone", COLOR_GESTURE_TEXT, font_instructions),
+    # Gesture instructions with consistent light gray color
+    (gesture_left_img, "Left: Move left", COLOR_GESTURE_TEXT, font_instructions),
+    (gesture_right_img, "Right: Move right", COLOR_GESTURE_TEXT, font_instructions),
+    (gesture_up_img, "Up: Move up", COLOR_GESTURE_TEXT, font_instructions),
+    (gesture_down_img, "Down: Move down", COLOR_GESTURE_TEXT, font_instructions),
+    ("Press Space or Enter to start the game.", COLOR_START_PROMPT, font_sub)  # Bright green prompt
 ]
 
 
@@ -310,21 +319,33 @@ def start_screen():
         # Set the initial position for the title (font_main)
         y_position = screen_height // 10 - 40  # Start closer to the top for the title
 
-        # Render the main title
+        # Render the main title with glow effect
         line, color, font = tutorial_text[0]
         text_surface = font.render(line, True, color)
         text_width, text_height = text_surface.get_size()
         x_position = (screen_width // 2) - (text_width // 2)
+        
+        # Add subtle glow effect for main title
+        glow_surface = font.render(line, True, (255, 255, 255, 100))
+        for offset in [(2, 2), (-2, -2), (2, -2), (-2, 2)]:
+            screen.blit(glow_surface, (x_position + offset[0], y_position + offset[1]))
+        
         screen.blit(text_surface, (x_position, y_position))
-        y_position += text_height + 10 # Add space after the title
+        y_position += text_height + 15  # Slightly more space after the title
 
-        # Render the subtext (font_sub)
+        # Render the subtitle with enhanced styling
         line, color, font = tutorial_text[1]
         text_surface = font.render(line, True, color)
         text_width, text_height = text_surface.get_size()
         x_position = (screen_width // 2) - (text_width // 2)
+        
+        # Add subtle glow for subtitle
+        glow_surface = font.render(line, True, (255, 255, 255, 60))
+        for offset in [(1, 1), (-1, -1)]:
+            screen.blit(glow_surface, (x_position + offset[0], y_position + offset[1]))
+        
         screen.blit(text_surface, (x_position, y_position))
-        y_position += text_height  # Add space after subtext
+        y_position += text_height + 5  # Add space after subtitle
 
         # **Place image between the main title and subtext**
         # Load and display the image
@@ -360,25 +381,40 @@ def start_screen():
                 text_width, text_height = text_surface.get_size()
                 display_text_with_image(screen, text, image, screen_width // 2, y_position, font, color)
                 y_position += text_height + 10  # Add space between lines
-            else:  # Text-only (title, subtext, or start prompt)
+            else:  # Text-only (instruction or start prompt)
                 line, color, font = item
                 text_surface = font.render(line, True, color)
                 text_width, text_height = text_surface.get_size()
 
                 x_position = (screen_width // 2) - (text_width // 2)
-                if line == tutorial_text[0][0]:  # Main title
+                if line == tutorial_text[0][0]:  # Main title (already handled above)
                     y_position = 50  # Slight padding from the top
-                elif line == tutorial_text[1][0]:  # Subtext below the title
+                elif line == tutorial_text[1][0]:  # Subtitle (already handled above)
                     y_position += text_height + 20  # Line spacing after title
                 elif line == tutorial_text[-1][0]:  # Press space or enter at the bottom
+                    # Add pulsing effect for start prompt
+                    pulse = int(20 * abs(math.sin(pygame.time.get_ticks() * 0.003)))
+                    pulse_color = (min(255, color[0] + pulse), min(255, color[1] + pulse), min(255, color[2] + pulse))
+                    enhanced_surface = font.render(line, True, pulse_color)
+                    
+                    # Add glow effect for start prompt
+                    glow_surface = font.render(line, True, (255, 255, 255, 80))
+                    for offset in [(1, 1), (-1, -1), (1, -1), (-1, 1)]:
+                        screen.blit(glow_surface, (x_position + offset[0], screen_height - 70 + offset[1]))
+                    
                     y_position = screen_height - 70  # Place near bottom
+                    screen.blit(enhanced_surface, (x_position, y_position))
+                    continue
                 elif line in [item[0] for item in tutorial_text[2:8]]:  # Gesture instructions, center vertically
                     if line == tutorial_text[2][0]:  # First line of gesture tutorial
+                        # Add subtle glow for instruction text
+                        glow_surface = font.render(line, True, (255, 255, 255, 40))
+                        screen.blit(glow_surface, (x_position + 1, (screen_height - gesture_section_height) // 2 + 51))
                         y_position = (screen_height - gesture_section_height) // 2 + 50
+                        # Render the instruction text here with glow
+                        screen.blit(text_surface, (x_position, y_position))
                     y_position += text_height + 10  # Line spacing between gesture tutorial lines
-
-                # Display the text
-                screen.blit(text_surface, (x_position, y_position))
+                
                 if line != tutorial_text[-1][0]:  # Don't increment y_position after the last text
                     y_position += text_height + 10  # Move to next line for subsequent text
 
