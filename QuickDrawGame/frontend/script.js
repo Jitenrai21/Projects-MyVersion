@@ -76,18 +76,15 @@ async function getNewObject() {
             const emoji = data.emoji;
             objectPlaceholder.textContent = `${emoji} ${currentObject.charAt(0).toUpperCase() + currentObject.slice(1)}`;
         } else {
-            // Fallback to local selection from 21 classes
+            // Fallback to local selection from 21 classes - Updated to match backend
             const objects = [
-                'airplane', 'alarm clock', 'apple', 'banana', 'bicycle', 
-                'bird', 'car', 'cat', 'chair', 'clock',
-                'dog', 'elephant', 'fish', 'flower', 'house',
-                'ice cream', 'pencil', 'pizza', 'spider', 'tree', 'umbrella'
+                'airplane', 'apple', 'banana', 'bicycle', 'bus', 'car', 'cat', 'computer', 'dog', 'elephant', 'fish', 'flower', 'horse', 'house', 'moon', 'rabbit', 'smiley face', 'star', 'sun', 'tree', 'truck'
             ];
             const emojiMap = {
-                'airplane': '✈️', 'alarm clock': '⏰', 'apple': '🍎', 'banana': '🍌', 'bicycle': '🚲',
-                'bird': '🐦', 'car': '🚗', 'cat': '🐱', 'chair': '🪑', 'clock': '🕐',
-                'dog': '🐶', 'elephant': '🐘', 'fish': '🐟', 'flower': '🌸', 'house': '🏠',
-                'ice cream': '🍦', 'pencil': '✏️', 'pizza': '🍕', 'spider': '🕷️', 'tree': '🌳', 'umbrella': '☂️'
+                'airplane': '✈️', 'apple': '🍎', 'banana': '🍌', 'bicycle': '🚲', 'bus': '🚌',
+                'car': '�', 'cat': '�', 'computer': '�', 'dog': '🐶', 'elephant': '�',
+                'fish': '�', 'flower': '🌸', 'horse': '�', 'house': '�', 'moon': '�',
+                'rabbit': '🐰', 'smiley face': '😊', 'star': '⭐', 'sun': '☀️', 'tree': '🌳', 'truck': '🚚'
             };
             currentObject = objects[Math.floor(Math.random() * objects.length)];
             const emoji = emojiMap[currentObject] || '❓';
