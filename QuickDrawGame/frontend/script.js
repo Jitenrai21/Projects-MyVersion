@@ -76,15 +76,15 @@ async function getNewObject() {
             const emoji = data.emoji;
             objectPlaceholder.textContent = `${emoji} ${currentObject.charAt(0).toUpperCase() + currentObject.slice(1)}`;
         } else {
-            // Fallback to local selection from 21 classes - Updated to match backend
+            // Fallback to local selection from 15 classes - Updated to match backend
             const objects = [
-                'airplane', 'apple', 'banana', 'bicycle', 'bus', 'car', 'cat', 'computer', 'dog', 'elephant', 'fish', 'flower', 'horse', 'house', 'moon', 'rabbit', 'smiley face', 'star', 'sun', 'tree', 'truck'
+                'apple', 'bowtie', 'candle', 'door', 'envelope', 'fish', 'guitar', 'ice cream', 'lightning', 'moon',
+                'mountain', 'star', 'tent', 'toothbrush', 'wristwatch'
             ];
             const emojiMap = {
-                'airplane': '✈️', 'apple': '🍎', 'banana': '🍌', 'bicycle': '🚲', 'bus': '🚌',
-                'car': '�', 'cat': '�', 'computer': '�', 'dog': '🐶', 'elephant': '�',
-                'fish': '�', 'flower': '🌸', 'horse': '�', 'house': '�', 'moon': '�',
-                'rabbit': '🐰', 'smiley face': '😊', 'star': '⭐', 'sun': '☀️', 'tree': '🌳', 'truck': '🚚'
+                'apple': '🍎', 'bowtie': '�', 'candle': '�️', 'door': '�', 'envelope': '✉️',
+                'fish': '🐟', 'guitar': '�', 'ice cream': '🍦', 'lightning': '⚡', 'moon': '🌙',
+                'mountain': '⛰️', 'star': '⭐', 'tent': '⛺', 'toothbrush': '🪥', 'wristwatch': '⌚'
             };
             currentObject = objects[Math.floor(Math.random() * objects.length)];
             const emoji = emojiMap[currentObject] || '❓';
@@ -298,12 +298,11 @@ function displayPredictionResults(data) {
 
     console.log("🎯 Processed data:", { prediction, expectedObject, isCorrect, confidence, topPredictions }); // Debug log
 
-    // Get emojis for all 21 classes
+    // Get emojis for all 15 classes
     const emojiMap = {
-        'airplane': '✈️', 'alarm clock': '⏰', 'apple': '🍎', 'banana': '🍌', 'bicycle': '🚲',
-        'bird': '🐦', 'car': '🚗', 'cat': '🐱', 'chair': '🪑', 'clock': '🕐',
-        'dog': '🐶', 'elephant': '🐘', 'fish': '🐟', 'flower': '🌸', 'house': '🏠',
-        'ice cream': '🍦', 'pencil': '✏️', 'pizza': '🍕', 'spider': '🕷️', 'tree': '🌳', 'umbrella': '☂️'
+        'apple': '🍎', 'bowtie': '🎀', 'candle': '🕯️', 'door': '🚪', 'envelope': '✉️',
+        'fish': '�', 'guitar': '🎸', 'ice cream': '🍦', 'lightning': '⚡', 'moon': '�',
+        'mountain': '⛰️', 'star': '⭐', 'tent': '⛺', 'toothbrush': '🪥', 'wristwatch': '⌚'
     };
     
     const predEmoji = emojiMap[prediction] || '❓';
@@ -312,7 +311,7 @@ function displayPredictionResults(data) {
 
     console.log("🎨 Emojis:", { predEmoji, expectedEmoji, resultEmoji }); // Debug log
 
-    // Create top predictions HTML with better styling for 21 classes
+    // Create top predictions HTML with better styling for 15 classes
     let topPredictionsHTML = '';
     const topEntries = Object.entries(topPredictions).slice(0, 3);
     if (topEntries.length > 0) {
@@ -387,7 +386,7 @@ function displayPredictionResults(data) {
             </div>
 
             <div style="background: rgba(102, 126, 234, 0.1); padding: 15px; border-radius: 10px; color: #667eea; font-weight: 600;">
-                🎮 QuickDraw Challenge: 21 Object Categories Available!
+                🎮 QuickDraw Challenge: 15 Object Categories Available!
             </div>
         </div>
     `;
