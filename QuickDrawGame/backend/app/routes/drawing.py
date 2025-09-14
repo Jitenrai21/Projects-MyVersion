@@ -18,7 +18,7 @@ router = APIRouter()
 @router.post("/api/recognize-drawing")
 async def recognize_drawing(data: DrawingData):
     """
-    Recognize drawing from 21 QuickDraw classes
+    Recognize drawing from 15 QuickDraw classes
     """
     try:
         drawing = data.drawing
@@ -122,6 +122,6 @@ async def health_check():
     """
     return {
         "status": "healthy",
-        "message": "QuickDraw 21-Class API is running!",
+        "message": "QuickDraw 15-Class API is running!",
         "version": "2.0.0"
     }

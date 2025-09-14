@@ -120,8 +120,13 @@ h1 {
     border-radius: 10px;
     box-shadow: 0 5px 15px rgba(0,0,0,0.2);
     display: block;
-    max-width: 100%;
-    height: auto;
+    /* Square canvas - maintain aspect ratio */
+    width: 400px;
+    height: 400px;
+    max-width: min(400px, 90vw);
+    max-height: min(400px, 90vw);
+    /* Keep it square on mobile */
+    aspect-ratio: 1 / 1;
 }
 
 #drawing-canvas:hover {

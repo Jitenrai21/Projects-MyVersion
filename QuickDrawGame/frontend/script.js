@@ -20,11 +20,15 @@ let timeLeft = 30;
 let timer;
 let currentObject = "";
 
-// Array to hold the sequence of drawing coordinates
+// Array to hold the sequence of drawing coordinates with stroke information
+// Updated for square canvas (400x400)
 let drawingData = [];
+let currentStroke = []; // Track current stroke
+let strokeStartTime = 0;
+const CANVAS_SIZE = { width: 400, height: 400 }; // Square canvas constants
 
-// Set canvas size
-canvas.width = 600;
+// Set canvas size - Square canvas for better aspect ratio
+canvas.width = 400;
 canvas.height = 400;
 
 // Configure canvas for better drawing
@@ -82,8 +86,8 @@ async function getNewObject() {
                 'mountain', 'star', 'tent', 'toothbrush', 'wristwatch'
             ];
             const emojiMap = {
-                'apple': '🍎', 'bowtie': '�', 'candle': '�️', 'door': '�', 'envelope': '✉️',
-                'fish': '🐟', 'guitar': '�', 'ice cream': '🍦', 'lightning': '⚡', 'moon': '🌙',
+                'apple': '🍎', 'bowtie': '🎀', 'candle': '🕯️', 'door': '🚪', 'envelope': '✉️',
+                'fish': '🐟', 'guitar': '🎸', 'ice cream': '🍦', 'lightning': '⚡', 'moon': '🌙',
                 'mountain': '⛰️', 'star': '⭐', 'tent': '⛺', 'toothbrush': '🪥', 'wristwatch': '⌚'
             };
             currentObject = objects[Math.floor(Math.random() * objects.length)];
@@ -160,18 +164,20 @@ function handleTouch(e) {
 function startDrawing(e) {
     drawing = true;
     [lastX, lastY] = getCoordinates(e);
+    strokeStartTime = Date.now();
     
-    // Add the starting point to drawing data
-    drawingData.push({ x: lastX, y: lastY });
+    // Start a new stroke
+    currentStroke = [{ x: lastX, y: lastY, timestamp: strokeStartTime }];
 }
 
 function draw(e) {
     if (!drawing) return;
     
     const [x, y] = getCoordinates(e);
+    const currentTime = Date.now();
     
-    // Store the drawing coordinates
-    drawingData.push({ x, y });
+    // Add point to current stroke
+    currentStroke.push({ x, y, timestamp: currentTime });
     
     // Draw on canvas
     ctx.beginPath();
@@ -183,6 +189,24 @@ function draw(e) {
 }
 
 function stopDrawing() {
+    if (drawing && currentStroke.length > 0) {
+        // Add the completed stroke to drawing data
+        drawingData = drawingData.concat(currentStroke);
+        
+        // Add a small gap indicator for stroke separation
+        if (currentStroke.length > 1) {
+            const lastPoint = currentStroke[currentStroke.length - 1];
+            // Add a point far away to indicate stroke end
+            drawingData.push({ 
+                x: lastPoint.x + 100, 
+                y: lastPoint.y + 100, 
+                timestamp: Date.now(),
+                strokeEnd: true 
+            });
+        }
+        
+        currentStroke = [];
+    }
     drawing = false;
 }
 
@@ -199,6 +223,7 @@ function getCoordinates(e) {
 function clearCanvas() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawingData = [];
+    currentStroke = [];
 }
 
 // End game and get prediction
@@ -301,7 +326,7 @@ function displayPredictionResults(data) {
     // Get emojis for all 15 classes
     const emojiMap = {
         'apple': '🍎', 'bowtie': '🎀', 'candle': '🕯️', 'door': '🚪', 'envelope': '✉️',
-        'fish': '�', 'guitar': '🎸', 'ice cream': '🍦', 'lightning': '⚡', 'moon': '�',
+        'fish': '🐟', 'guitar': '🎸', 'ice cream': '🍦', 'lightning': '⚡', 'moon': '🌙',
         'mountain': '⛰️', 'star': '⭐', 'tent': '⛺', 'toothbrush': '🪥', 'wristwatch': '⌚'
     };
     

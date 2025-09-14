@@ -6,8 +6,8 @@ import os
 
 # Create FastAPI app
 app = FastAPI(
-    title="QuickDraw 21-Class API",
-    description="AI-powered drawing recognition for 21 QuickDraw classes",
+    title="QuickDraw 15-Class API",
+    description="AI-powered drawing recognition for 15 QuickDraw classes",
     version="2.0.0"
 )
 
@@ -47,11 +47,11 @@ else:
 @app.get("/")
 async def root():
     return {
-        "message": "Welcome to QuickDraw 21-Class API!",
+        "message": "Welcome to QuickDraw 15-Class API!",
         "docs": "/docs", 
         "frontend": "/static/index.html",
         "game": "Open /static/index.html to play the game!",
-        "classes": "21 classes: airplane, alarm clock, apple, banana, bicycle, bird, car, cat, chair, clock, dog, elephant, fish, flower, house, ice cream, pencil, pizza, spider, tree, umbrella"
+        "classes": "15 classes: apple, bowtie, candle, door, envelope, fish, guitar, ice cream, lightning, moon, mountain, star, tent, toothbrush, wristwatch"
     }
 
 # Serve the game directly
@@ -63,7 +63,7 @@ async def serve_game():
 
 @app.get("/health")
 async def health():
-    return {"status": "healthy", "service": "QuickDraw 21-Class API"}
+    return {"status": "healthy", "service": "QuickDraw 15-Class API"}
 
 if __name__ == "__main__":
     import uvicorn
