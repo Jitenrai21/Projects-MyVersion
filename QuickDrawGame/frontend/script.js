@@ -365,7 +365,7 @@ function displayPredictionResults(data) {
         `;
     }
 
-    // Enhanced result HTML - COMPLETELY NEW VERSION
+    // Enhanced result HTML - HYBRID APPROACH VERSION
     const resultHTML = `
         <div style="text-align: center; padding: 25px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: linear-gradient(135deg, #f8f9fa, #ffffff); border-radius: 20px;">
             <div style="font-size: 4em; margin-bottom: 15px;">${resultEmoji}</div>
@@ -410,6 +410,10 @@ function displayPredictionResults(data) {
                 </div>
             </div>
 
+            <div style="background: rgba(76, 175, 80, 0.1); padding: 15px; border-radius: 10px; color: #388e3c; font-weight: 600; margin: 15px 0;">
+                🚀 HYBRID AI: OpenCV + 64x64 Neural Network
+            </div>
+            
             <div style="background: rgba(102, 126, 234, 0.1); padding: 15px; border-radius: 10px; color: #667eea; font-weight: 600;">
                 🎮 QuickDraw Challenge: 15 Object Categories Available!
             </div>

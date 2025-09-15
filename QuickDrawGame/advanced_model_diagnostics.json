@@ -1,0 +1,998 @@
+{
+  "model_info": {
+    "input_shape": [
+      null,
+      64,
+      64,
+      1
+    ],
+    "classes": [
+      "apple",
+      "bowtie",
+      "candle",
+      "door",
+      "envelope",
+      "fish",
+      "guitar",
+      "ice cream",
+      "lightning",
+      "moon",
+      "mountain",
+      "star",
+      "tent",
+      "toothbrush",
+      "wristwatch"
+    ],
+    "total_classes": 15
+  },
+  "test_results": {
+    "apple": {
+      "predicted": "star",
+      "confidence": 1.0,
+      "correct": false,
+      "top_5": [
+        {
+          "class": "star",
+          "confidence": 1.0
+        },
+        {
+          "class": "toothbrush",
+          "confidence": 0.0
+        },
+        {
+          "class": "wristwatch",
+          "confidence": 0.0
+        },
+        {
+          "class": "tent",
+          "confidence": 0.0
+        },
+        {
+          "class": "mountain",
+          "confidence": 0.0
+        }
+      ],
+      "all_probs": {
+        "apple": 0.0,
+        "bowtie": 0.0,
+        "candle": 0.0,
+        "door": 0.0,
+        "envelope": 0.0,
+        "fish": 0.0,
+        "guitar": 0.0,
+        "ice cream": 0.0,
+        "lightning": 0.0,
+        "moon": 0.0,
+        "mountain": 0.0,
+        "star": 1.0,
+        "tent": 0.0,
+        "toothbrush": 0.0,
+        "wristwatch": 0.0
+      },
+      "true_class_rank": 2,
+      "analysis": {
+        "drawing_points": 53,
+        "true_class_confidence": 0.0,
+        "true_class_rank": 2,
+        "top_1_confidence": 1.0,
+        "top_1_vs_true_diff": 1.0,
+        "confidence_spread": 1.0
+      }
+    },
+    "bowtie": {
+      "predicted": "wristwatch",
+      "confidence": 1.0,
+      "correct": false,
+      "top_5": [
+        {
+          "class": "wristwatch",
+          "confidence": 1.0
+        },
+        {
+          "class": "bowtie",
+          "confidence": 3.769960846363981e-30
+        },
+        {
+          "class": "toothbrush",
+          "confidence": 0.0
+        },
+        {
+          "class": "star",
+          "confidence": 0.0
+        },
+        {
+          "class": "mountain",
+          "confidence": 0.0
+        }
+      ],
+      "all_probs": {
+        "apple": 0.0,
+        "bowtie": 3.769960846363981e-30,
+        "candle": 0.0,
+        "door": 0.0,
+        "envelope": 0.0,
+        "fish": 0.0,
+        "guitar": 0.0,
+        "ice cream": 0.0,
+        "lightning": 0.0,
+        "moon": 0.0,
+        "mountain": 0.0,
+        "star": 0.0,
+        "tent": 0.0,
+        "toothbrush": 0.0,
+        "wristwatch": 1.0
+      },
+      "true_class_rank": 2,
+      "analysis": {
+        "drawing_points": 15,
+        "true_class_confidence": 3.769960846363981e-30,
+        "true_class_rank": 2,
+        "top_1_confidence": 1.0,
+        "top_1_vs_true_diff": 1.0,
+        "confidence_spread": 1.0
+      }
+    },
+    "candle": {
+      "predicted": "apple",
+      "confidence": 1.0,
+      "correct": false,
+      "top_5": [
+        {
+          "class": "apple",
+          "confidence": 1.0
+        },
+        {
+          "class": "ice cream",
+          "confidence": 1.5277168292995326e-16
+        },
+        {
+          "class": "wristwatch",
+          "confidence": 5.748507822808605e-21
+        },
+        {
+          "class": "star",
+          "confidence": 6.330613659157097e-32
+        },
+        {
+          "class": "mountain",
+          "confidence": 0.0
+        }
+      ],
+      "all_probs": {
+        "apple": 1.0,
+        "bowtie": 0.0,
+        "candle": 0.0,
+        "door": 0.0,
+        "envelope": 0.0,
+        "fish": 0.0,
+        "guitar": 0.0,
+        "ice cream": 1.5277168292995326e-16,
+        "lightning": 0.0,
+        "moon": 0.0,
+        "mountain": 0.0,
+        "star": 6.330613659157097e-32,
+        "tent": 0.0,
+        "toothbrush": 0.0,
+        "wristwatch": 5.748507822808605e-21
+      },
+      "true_class_rank": 6,
+      "analysis": {
+        "drawing_points": 26,
+        "true_class_confidence": 0.0,
+        "true_class_rank": 6,
+        "top_1_confidence": 1.0,
+        "top_1_vs_true_diff": 1.0,
+        "confidence_spread": 1.0
+      }
+    },
+    "door": {
+      "predicted": "lightning",
+      "confidence": 0.9946958422660828,
+      "correct": false,
+      "top_5": [
+        {
+          "class": "lightning",
+          "confidence": 0.9946958422660828
+        },
+        {
+          "class": "star",
+          "confidence": 0.0052324444986879826
+        },
+        {
+          "class": "guitar",
+          "confidence": 7.176819781307131e-05
+        },
+        {
+          "class": "wristwatch",
+          "confidence": 2.8921149919369782e-08
+        },
+        {
+          "class": "ice cream",
+          "confidence": 8.834510285096465e-28
+        }
+      ],
+      "all_probs": {
+        "apple": 4.348327915397936e-29,
+        "bowtie": 0.0,
+        "candle": 7.497672148239105e-34,
+        "door": 0.0,
+        "envelope": 0.0,
+        "fish": 9.143916859488438e-37,
+        "guitar": 7.176819781307131e-05,
+        "ice cream": 8.834510285096465e-28,
+        "lightning": 0.9946958422660828,
+        "moon": 7.441546921496347e-32,
+        "mountain": 0.0,
+        "star": 0.0052324444986879826,
+        "tent": 0.0,
+        "toothbrush": 0.0,
+        "wristwatch": 2.8921149919369782e-08
+      },
+      "true_class_rank": 11,
+      "analysis": {
+        "drawing_points": 21,
+        "true_class_confidence": 0.0,
+        "true_class_rank": 11,
+        "top_1_confidence": 0.9946958422660828,
+        "top_1_vs_true_diff": 0.9946958422660828,
+        "confidence_spread": 0.9946958422660828
+      }
+    },
+    "envelope": {
+      "predicted": "moon",
+      "confidence": 0.9958351850509644,
+      "correct": false,
+      "top_5": [
+        {
+          "class": "moon",
+          "confidence": 0.9958351850509644
+        },
+        {
+          "class": "guitar",
+          "confidence": 0.003937156405299902
+        },
+        {
+          "class": "wristwatch",
+          "confidence": 0.00022291537607088685
+        },
+        {
+          "class": "bowtie",
+          "confidence": 4.758140676131006e-06
+        },
+        {
+          "class": "lightning",
+          "confidence": 2.0551693680204153e-10
+        }
+      ],
+      "all_probs": {
+        "apple": 2.6487240677684765e-13,
+        "bowtie": 4.758140676131006e-06,
+        "candle": 2.669952070866753e-28,
+        "door": 1.8520796587336195e-32,
+        "envelope": 2.4490549477583284e-15,
+        "fish": 1.8708979677983795e-12,
+        "guitar": 0.003937156405299902,
+        "ice cream": 1.2935265337442188e-18,
+        "lightning": 2.0551693680204153e-10,
+        "moon": 0.9958351850509644,
+        "mountain": 3.0345024426138203e-28,
+        "star": 6.921211359656498e-27,
+        "tent": 1.1471531820239622e-30,
+        "toothbrush": 1.1578199706888881e-20,
+        "wristwatch": 0.00022291537607088685
+      },
+      "true_class_rank": 8,
+      "analysis": {
+        "drawing_points": 9,
+        "true_class_confidence": 2.4490549477583284e-15,
+        "true_class_rank": 8,
+        "top_1_confidence": 0.9958351850509644,
+        "top_1_vs_true_diff": 0.9958351850509619,
+        "confidence_spread": 0.9958351850509644
+      }
+    },
+    "fish": {
+      "predicted": "wristwatch",
+      "confidence": 0.9999994039535522,
+      "correct": false,
+      "top_5": [
+        {
+          "class": "wristwatch",
+          "confidence": 0.9999994039535522
+        },
+        {
+          "class": "guitar",
+          "confidence": 5.974304144729103e-07
+        },
+        {
+          "class": "bowtie",
+          "confidence": 2.9305592555954773e-18
+        },
+        {
+          "class": "star",
+          "confidence": 0.0
+        },
+        {
+          "class": "mountain",
+          "confidence": 0.0
+        }
+      ],
+      "all_probs": {
+        "apple": 0.0,
+        "bowtie": 2.9305592555954773e-18,
+        "candle": 0.0,
+        "door": 0.0,
+        "envelope": 0.0,
+        "fish": 0.0,
+        "guitar": 5.974304144729103e-07,
+        "ice cream": 0.0,
+        "lightning": 0.0,
+        "moon": 0.0,
+        "mountain": 0.0,
+        "star": 0.0,
+        "tent": 0.0,
+        "toothbrush": 0.0,
+        "wristwatch": 0.9999994039535522
+      },
+      "true_class_rank": 8,
+      "analysis": {
+        "drawing_points": 38,
+        "true_class_confidence": 0.0,
+        "true_class_rank": 8,
+        "top_1_confidence": 0.9999994039535522,
+        "top_1_vs_true_diff": 0.9999994039535522,
+        "confidence_spread": 0.9999994039535522
+      }
+    },
+    "guitar": {
+      "predicted": "wristwatch",
+      "confidence": 0.9999837875366211,
+      "correct": false,
+      "top_5": [
+        {
+          "class": "wristwatch",
+          "confidence": 0.9999837875366211
+        },
+        {
+          "class": "bowtie",
+          "confidence": 1.6211064576054923e-05
+        },
+        {
+          "class": "guitar",
+          "confidence": 8.003593417755133e-22
+        },
+        {
+          "class": "lightning",
+          "confidence": 3.0687910673979276e-30
+        },
+        {
+          "class": "fish",
+          "confidence": 1.5369120491210448e-36
+        }
+      ],
+      "all_probs": {
+        "apple": 0.0,
+        "bowtie": 1.6211064576054923e-05,
+        "candle": 0.0,
+        "door": 0.0,
+        "envelope": 0.0,
+        "fish": 1.5369120491210448e-36,
+        "guitar": 8.003593417755133e-22,
+        "ice cream": 0.0,
+        "lightning": 3.0687910673979276e-30,
+        "moon": 0.0,
+        "mountain": 0.0,
+        "star": 0.0,
+        "tent": 0.0,
+        "toothbrush": 0.0,
+        "wristwatch": 0.9999837875366211
+      },
+      "true_class_rank": 3,
+      "analysis": {
+        "drawing_points": 56,
+        "true_class_confidence": 8.003593417755133e-22,
+        "true_class_rank": 3,
+        "top_1_confidence": 0.9999837875366211,
+        "top_1_vs_true_diff": 0.9999837875366211,
+        "confidence_spread": 0.9999837875366211
+      }
+    },
+    "ice cream": {
+      "predicted": "guitar",
+      "confidence": 0.9999997615814209,
+      "correct": false,
+      "top_5": [
+        {
+          "class": "guitar",
+          "confidence": 0.9999997615814209
+        },
+        {
+          "class": "wristwatch",
+          "confidence": 2.9117776989551203e-07
+        },
+        {
+          "class": "star",
+          "confidence": 4.104202654814371e-12
+        },
+        {
+          "class": "tent",
+          "confidence": 0.0
+        },
+        {
+          "class": "mountain",
+          "confidence": 0.0
+        }
+      ],
+      "all_probs": {
+        "apple": 0.0,
+        "bowtie": 0.0,
+        "candle": 0.0,
+        "door": 0.0,
+        "envelope": 0.0,
+        "fish": 0.0,
+        "guitar": 0.9999997615814209,
+        "ice cream": 0.0,
+        "lightning": 0.0,
+        "moon": 0.0,
+        "mountain": 0.0,
+        "star": 4.104202654814371e-12,
+        "tent": 0.0,
+        "toothbrush": 0.0,
+        "wristwatch": 2.9117776989551203e-07
+      },
+      "true_class_rank": 10,
+      "analysis": {
+        "drawing_points": 45,
+        "true_class_confidence": 0.0,
+        "true_class_rank": 10,
+        "top_1_confidence": 0.9999997615814209,
+        "top_1_vs_true_diff": 0.9999997615814209,
+        "confidence_spread": 0.9999997615814209
+      }
+    },
+    "lightning": {
+      "predicted": "wristwatch",
+      "confidence": 1.0,
+      "correct": false,
+      "top_5": [
+        {
+          "class": "wristwatch",
+          "confidence": 1.0
+        },
+        {
+          "class": "toothbrush",
+          "confidence": 0.0
+        },
+        {
+          "class": "tent",
+          "confidence": 0.0
+        },
+        {
+          "class": "star",
+          "confidence": 0.0
+        },
+        {
+          "class": "mountain",
+          "confidence": 0.0
+        }
+      ],
+      "all_probs": {
+        "apple": 0.0,
+        "bowtie": 0.0,
+        "candle": 0.0,
+        "door": 0.0,
+        "envelope": 0.0,
+        "fish": 0.0,
+        "guitar": 0.0,
+        "ice cream": 0.0,
+        "lightning": 0.0,
+        "moon": 0.0,
+        "mountain": 0.0,
+        "star": 0.0,
+        "tent": 0.0,
+        "toothbrush": 0.0,
+        "wristwatch": 1.0
+      },
+      "true_class_rank": 10,
+      "analysis": {
+        "drawing_points": 7,
+        "true_class_confidence": 0.0,
+        "true_class_rank": 10,
+        "top_1_confidence": 1.0,
+        "top_1_vs_true_diff": 1.0,
+        "confidence_spread": 1.0
+      }
+    },
+    "moon": {
+      "predicted": "star",
+      "confidence": 1.0,
+      "correct": false,
+      "top_5": [
+        {
+          "class": "star",
+          "confidence": 1.0
+        },
+        {
+          "class": "toothbrush",
+          "confidence": 0.0
+        },
+        {
+          "class": "wristwatch",
+          "confidence": 0.0
+        },
+        {
+          "class": "tent",
+          "confidence": 0.0
+        },
+        {
+          "class": "mountain",
+          "confidence": 0.0
+        }
+      ],
+      "all_probs": {
+        "apple": 0.0,
+        "bowtie": 0.0,
+        "candle": 0.0,
+        "door": 0.0,
+        "envelope": 0.0,
+        "fish": 0.0,
+        "guitar": 0.0,
+        "ice cream": 0.0,
+        "lightning": 0.0,
+        "moon": 0.0,
+        "mountain": 0.0,
+        "star": 1.0,
+        "tent": 0.0,
+        "toothbrush": 0.0,
+        "wristwatch": 0.0
+      },
+      "true_class_rank": 11,
+      "analysis": {
+        "drawing_points": 60,
+        "true_class_confidence": 0.0,
+        "true_class_rank": 11,
+        "top_1_confidence": 1.0,
+        "top_1_vs_true_diff": 1.0,
+        "confidence_spread": 1.0
+      }
+    },
+    "mountain": {
+      "predicted": "guitar",
+      "confidence": 0.9459911584854126,
+      "correct": false,
+      "top_5": [
+        {
+          "class": "guitar",
+          "confidence": 0.9459911584854126
+        },
+        {
+          "class": "star",
+          "confidence": 0.05400671064853668
+        },
+        {
+          "class": "wristwatch",
+          "confidence": 1.1472819778646226e-06
+        },
+        {
+          "class": "fish",
+          "confidence": 9.875371915768483e-07
+        },
+        {
+          "class": "bowtie",
+          "confidence": 4.031693381922885e-12
+        }
+      ],
+      "all_probs": {
+        "apple": 1.8098268433851917e-17,
+        "bowtie": 4.031693381922885e-12,
+        "candle": 0.0,
+        "door": 0.0,
+        "envelope": 1.8938994956116113e-16,
+        "fish": 9.875371915768483e-07,
+        "guitar": 0.9459911584854126,
+        "ice cream": 1.527172284908398e-36,
+        "lightning": 5.4451657770849894e-18,
+        "moon": 1.5276974166630257e-20,
+        "mountain": 1.1718397733038991e-21,
+        "star": 0.05400671064853668,
+        "tent": 1.7374793736737108e-35,
+        "toothbrush": 0.0,
+        "wristwatch": 1.1472819778646226e-06
+      },
+      "true_class_rank": 10,
+      "analysis": {
+        "drawing_points": 7,
+        "true_class_confidence": 1.1718397733038991e-21,
+        "true_class_rank": 10,
+        "top_1_confidence": 0.9459911584854126,
+        "top_1_vs_true_diff": 0.9459911584854126,
+        "confidence_spread": 0.9459911584854126
+      }
+    },
+    "star": {
+      "predicted": "star",
+      "confidence": 0.9986864924430847,
+      "correct": true,
+      "top_5": [
+        {
+          "class": "star",
+          "confidence": 0.9986864924430847
+        },
+        {
+          "class": "lightning",
+          "confidence": 0.0012974973069503903
+        },
+        {
+          "class": "wristwatch",
+          "confidence": 1.599817733222153e-05
+        },
+        {
+          "class": "moon",
+          "confidence": 8.482500035711382e-09
+        },
+        {
+          "class": "bowtie",
+          "confidence": 1.531268364331987e-14
+        }
+      ],
+      "all_probs": {
+        "apple": 3.789111131360024e-24,
+        "bowtie": 1.531268364331987e-14,
+        "candle": 4.608537902771665e-29,
+        "door": 5.1193112818706255e-31,
+        "envelope": 8.523448361918259e-21,
+        "fish": 1.4378460512607e-14,
+        "guitar": 3.034107445937806e-25,
+        "ice cream": 1.4805624310105028e-14,
+        "lightning": 0.0012974973069503903,
+        "moon": 8.482500035711382e-09,
+        "mountain": 3.1168545143974548e-21,
+        "star": 0.9986864924430847,
+        "tent": 4.1557143183236326e-26,
+        "toothbrush": 3.854349533791349e-24,
+        "wristwatch": 1.599817733222153e-05
+      },
+      "true_class_rank": 1,
+      "analysis": {
+        "drawing_points": 11,
+        "true_class_confidence": 0.9986864924430847,
+        "true_class_rank": 1,
+        "top_1_confidence": 0.9986864924430847,
+        "top_1_vs_true_diff": 0.0,
+        "confidence_spread": 0.9986864924430847
+      }
+    },
+    "tent": {
+      "predicted": "fish",
+      "confidence": 0.9993739724159241,
+      "correct": false,
+      "top_5": [
+        {
+          "class": "fish",
+          "confidence": 0.9993739724159241
+        },
+        {
+          "class": "bowtie",
+          "confidence": 0.0006260047666728497
+        },
+        {
+          "class": "star",
+          "confidence": 6.144532799234881e-11
+        },
+        {
+          "class": "guitar",
+          "confidence": 6.344643777370096e-13
+        },
+        {
+          "class": "moon",
+          "confidence": 8.436691147229575e-16
+        }
+      ],
+      "all_probs": {
+        "apple": 9.386359299524456e-22,
+        "bowtie": 0.0006260047666728497,
+        "candle": 0.0,
+        "door": 0.0,
+        "envelope": 1.2129295562382677e-22,
+        "fish": 0.9993739724159241,
+        "guitar": 6.344643777370096e-13,
+        "ice cream": 8.763843349632881e-38,
+        "lightning": 5.411601460816501e-22,
+        "moon": 8.436691147229575e-16,
+        "mountain": 9.888952245786852e-25,
+        "star": 6.144532799234881e-11,
+        "tent": 2.0553280214050415e-23,
+        "toothbrush": 2.2007649317133023e-33,
+        "wristwatch": 6.187225153830159e-22
+      },
+      "true_class_rank": 10,
+      "analysis": {
+        "drawing_points": 13,
+        "true_class_confidence": 2.0553280214050415e-23,
+        "true_class_rank": 10,
+        "top_1_confidence": 0.9993739724159241,
+        "top_1_vs_true_diff": 0.9993739724159241,
+        "confidence_spread": 0.9993739724159241
+      }
+    },
+    "toothbrush": {
+      "predicted": "star",
+      "confidence": 1.0,
+      "correct": false,
+      "top_5": [
+        {
+          "class": "star",
+          "confidence": 1.0
+        },
+        {
+          "class": "toothbrush",
+          "confidence": 0.0
+        },
+        {
+          "class": "wristwatch",
+          "confidence": 0.0
+        },
+        {
+          "class": "tent",
+          "confidence": 0.0
+        },
+        {
+          "class": "mountain",
+          "confidence": 0.0
+        }
+      ],
+      "all_probs": {
+        "apple": 0.0,
+        "bowtie": 0.0,
+        "candle": 0.0,
+        "door": 0.0,
+        "envelope": 0.0,
+        "fish": 0.0,
+        "guitar": 0.0,
+        "ice cream": 0.0,
+        "lightning": 0.0,
+        "moon": 0.0,
+        "mountain": 0.0,
+        "star": 1.0,
+        "tent": 0.0,
+        "toothbrush": 0.0,
+        "wristwatch": 0.0
+      },
+      "true_class_rank": 14,
+      "analysis": {
+        "drawing_points": 29,
+        "true_class_confidence": 0.0,
+        "true_class_rank": 14,
+        "top_1_confidence": 1.0,
+        "top_1_vs_true_diff": 1.0,
+        "confidence_spread": 1.0
+      }
+    },
+    "wristwatch": {
+      "predicted": "star",
+      "confidence": 1.0,
+      "correct": false,
+      "top_5": [
+        {
+          "class": "star",
+          "confidence": 1.0
+        },
+        {
+          "class": "toothbrush",
+          "confidence": 0.0
+        },
+        {
+          "class": "wristwatch",
+          "confidence": 0.0
+        },
+        {
+          "class": "tent",
+          "confidence": 0.0
+        },
+        {
+          "class": "mountain",
+          "confidence": 0.0
+        }
+      ],
+      "all_probs": {
+        "apple": 0.0,
+        "bowtie": 0.0,
+        "candle": 0.0,
+        "door": 0.0,
+        "envelope": 0.0,
+        "fish": 0.0,
+        "guitar": 0.0,
+        "ice cream": 0.0,
+        "lightning": 0.0,
+        "moon": 0.0,
+        "mountain": 0.0,
+        "star": 1.0,
+        "tent": 0.0,
+        "toothbrush": 0.0,
+        "wristwatch": 0.0
+      },
+      "true_class_rank": 15,
+      "analysis": {
+        "drawing_points": 56,
+        "true_class_confidence": 0.0,
+        "true_class_rank": 15,
+        "top_1_confidence": 1.0,
+        "top_1_vs_true_diff": 1.0,
+        "confidence_spread": 1.0
+      }
+    }
+  },
+  "performance_analysis": {
+    "accuracy": 0.06666666666666667,
+    "avg_confidence": 0.9956377069155375,
+    "avg_true_class_confidence": 0.06657909949620582,
+    "avg_rank": 8.066666666666666,
+    "prediction_bias": {
+      "star": 5,
+      "wristwatch": 4,
+      "apple": 1,
+      "lightning": 1,
+      "moon": 1,
+      "guitar": 2,
+      "fish": 1
+    },
+    "top_1_accuracy": 0.06666666666666667,
+    "top_3_accuracy": 0.26666666666666666,
+    "low_confidence_classes": [
+      "apple",
+      "bowtie",
+      "candle",
+      "door",
+      "envelope",
+      "fish",
+      "guitar",
+      "ice cream",
+      "lightning",
+      "moon",
+      "mountain",
+      "tent",
+      "toothbrush",
+      "wristwatch"
+    ],
+    "misclassified_classes": [
+      "apple",
+      "bowtie",
+      "candle",
+      "door",
+      "envelope",
+      "fish",
+      "guitar",
+      "ice cream",
+      "lightning",
+      "moon",
+      "mountain",
+      "tent",
+      "toothbrush",
+      "wristwatch"
+    ],
+    "avg_confidence_spread": 0.9956377069155375
+  },
+  "detailed_analysis": {
+    "apple": {
+      "drawing_points": 53,
+      "true_class_confidence": 0.0,
+      "true_class_rank": 2,
+      "top_1_confidence": 1.0,
+      "top_1_vs_true_diff": 1.0,
+      "confidence_spread": 1.0
+    },
+    "bowtie": {
+      "drawing_points": 15,
+      "true_class_confidence": 3.769960846363981e-30,
+      "true_class_rank": 2,
+      "top_1_confidence": 1.0,
+      "top_1_vs_true_diff": 1.0,
+      "confidence_spread": 1.0
+    },
+    "candle": {
+      "drawing_points": 26,
+      "true_class_confidence": 0.0,
+      "true_class_rank": 6,
+      "top_1_confidence": 1.0,
+      "top_1_vs_true_diff": 1.0,
+      "confidence_spread": 1.0
+    },
+    "door": {
+      "drawing_points": 21,
+      "true_class_confidence": 0.0,
+      "true_class_rank": 11,
+      "top_1_confidence": 0.9946958422660828,
+      "top_1_vs_true_diff": 0.9946958422660828,
+      "confidence_spread": 0.9946958422660828
+    },
+    "envelope": {
+      "drawing_points": 9,
+      "true_class_confidence": 2.4490549477583284e-15,
+      "true_class_rank": 8,
+      "top_1_confidence": 0.9958351850509644,
+      "top_1_vs_true_diff": 0.9958351850509619,
+      "confidence_spread": 0.9958351850509644
+    },
+    "fish": {
+      "drawing_points": 38,
+      "true_class_confidence": 0.0,
+      "true_class_rank": 8,
+      "top_1_confidence": 0.9999994039535522,
+      "top_1_vs_true_diff": 0.9999994039535522,
+      "confidence_spread": 0.9999994039535522
+    },
+    "guitar": {
+      "drawing_points": 56,
+      "true_class_confidence": 8.003593417755133e-22,
+      "true_class_rank": 3,
+      "top_1_confidence": 0.9999837875366211,
+      "top_1_vs_true_diff": 0.9999837875366211,
+      "confidence_spread": 0.9999837875366211
+    },
+    "ice cream": {
+      "drawing_points": 45,
+      "true_class_confidence": 0.0,
+      "true_class_rank": 10,
+      "top_1_confidence": 0.9999997615814209,
+      "top_1_vs_true_diff": 0.9999997615814209,
+      "confidence_spread": 0.9999997615814209
+    },
+    "lightning": {
+      "drawing_points": 7,
+      "true_class_confidence": 0.0,
+      "true_class_rank": 10,
+      "top_1_confidence": 1.0,
+      "top_1_vs_true_diff": 1.0,
+      "confidence_spread": 1.0
+    },
+    "moon": {
+      "drawing_points": 60,
+      "true_class_confidence": 0.0,
+      "true_class_rank": 11,
+      "top_1_confidence": 1.0,
+      "top_1_vs_true_diff": 1.0,
+      "confidence_spread": 1.0
+    },
+    "mountain": {
+      "drawing_points": 7,
+      "true_class_confidence": 1.1718397733038991e-21,
+      "true_class_rank": 10,
+      "top_1_confidence": 0.9459911584854126,
+      "top_1_vs_true_diff": 0.9459911584854126,
+      "confidence_spread": 0.9459911584854126
+    },
+    "star": {
+      "drawing_points": 11,
+      "true_class_confidence": 0.9986864924430847,
+      "true_class_rank": 1,
+      "top_1_confidence": 0.9986864924430847,
+      "top_1_vs_true_diff": 0.0,
+      "confidence_spread": 0.9986864924430847
+    },
+    "tent": {
+      "drawing_points": 13,
+      "true_class_confidence": 2.0553280214050415e-23,
+      "true_class_rank": 10,
+      "top_1_confidence": 0.9993739724159241,
+      "top_1_vs_true_diff": 0.9993739724159241,
+      "confidence_spread": 0.9993739724159241
+    },
+    "toothbrush": {
+      "drawing_points": 29,
+      "true_class_confidence": 0.0,
+      "true_class_rank": 14,
+      "top_1_confidence": 1.0,
+      "top_1_vs_true_diff": 1.0,
+      "confidence_spread": 1.0
+    },
+    "wristwatch": {
+      "drawing_points": 56,
+      "true_class_confidence": 0.0,
+      "true_class_rank": 15,
+      "top_1_confidence": 1.0,
+      "top_1_vs_true_diff": 1.0,
+      "confidence_spread": 1.0
+    }
+  },
+  "timestamp": "2025-09-15T05:56:22"
+}

@@ -1,7 +1,6 @@
-models/
 Dataset-TrainValidation/
 features
 labels
 features_ontrad 
 labels_ontrad
-mode_training/model_trad 
+model_trad/ 
