@@ -19,6 +19,16 @@ let lastY = 0;
 let timeLeft = 30;
 let timer;
 let currentObject = "";
+let gameActive = false;
+let gameWon = false;
+
+// Real-time evaluation variables
+let evaluationTimeout;
+let lastEvaluationTime = 0;
+const EVALUATION_DELAY = 1000; // 1 second delay between evaluations
+const SUCCESS_THRESHOLD = 0.7; // 70% confidence threshold for immediate success
+let currentConfidence = 0;
+let isEvaluating = false;
 
 // Array to hold the sequence of drawing coordinates with stroke information
 // Updated for square canvas (400x400)
@@ -110,6 +120,12 @@ clearButton.addEventListener("click", clearCanvas);
 // Timer function
 function startTimer() {
     timer = setInterval(() => {
+        // Don't continue timer if game was won early
+        if (gameWon || !gameActive) {
+            clearInterval(timer);
+            return;
+        }
+        
         timeLeft--;
         timeLeftDisplay.textContent = timeLeft;
         
@@ -122,6 +138,7 @@ function startTimer() {
         
         if (timeLeft <= 0) {
             clearInterval(timer);
+            gameActive = false;
             endGame();
         }
     }, 1000);
@@ -136,8 +153,196 @@ function startGame() {
     timeLeftDisplay.textContent = timeLeft;
     timeLeftDisplay.style.color = '#333';
     drawingData = [];
+    gameActive = true;
+    gameWon = false;
+    currentConfidence = 0;
+    isEvaluating = false;
     clearCanvas();
     startTimer();
+    
+    // Add real-time confidence display if it doesn't exist
+    if (!document.getElementById('confidence-display')) {
+        addConfidenceDisplay();
+    }
+}
+
+// Add real-time confidence display to the UI
+function addConfidenceDisplay() {
+    const gameScreen = document.getElementById('game-screen');
+    const confidenceDiv = document.createElement('div');
+    confidenceDiv.id = 'confidence-display';
+    confidenceDiv.style.cssText = `
+        position: absolute;
+        top: 60px;
+        right: 20px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 10px 15px;
+        border-radius: 10px;
+        font-weight: bold;
+        min-width: 150px;
+        text-align: center;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    `;
+    confidenceDiv.innerHTML = `
+        <div style="font-size: 0.8em; margin-bottom: 2px;">🤖 AI Confidence</div>
+        <div id="confidence-value" style="font-size: 1.2em;">0%</div>
+        <div id="confidence-status" style="font-size: 0.7em; margin-top: 2px;">Keep drawing...</div>
+    `;
+    gameScreen.appendChild(confidenceDiv);
+}
+
+// Real-time drawing evaluation with debouncing
+async function evaluateDrawingRealTime() {
+    // Don't evaluate if game is not active or already won
+    if (!gameActive || gameWon || isEvaluating) return;
+    
+    // Don't evaluate if there's not enough drawing data
+    if (drawingData.length < 10) return;
+    
+    // Debouncing: don't evaluate too frequently
+    const now = Date.now();
+    if (now - lastEvaluationTime < EVALUATION_DELAY) return;
+    
+    lastEvaluationTime = now;
+    isEvaluating = true;
+    
+    try {
+        const requestData = {
+            drawing: drawingData,
+            object: currentObject
+        };
+
+        const response = await fetch(`${API_BASE_URL}/api/recognize-drawing`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(requestData)
+        });
+
+        if (!response.ok) {
+            console.warn("Real-time evaluation failed:", response.status);
+            return;
+        }
+
+        const data = await response.json();
+        
+        if (data.error) {
+            console.warn("Real-time evaluation error:", data.error);
+            return;
+        }
+
+        // Update confidence display
+        currentConfidence = data.confidence;
+        updateConfidenceDisplay(data);
+        
+        // Check for success condition
+        const isCorrect = data.prediction.toLowerCase() === currentObject.toLowerCase();
+        const highConfidence = data.confidence >= SUCCESS_THRESHOLD;
+        
+        if (isCorrect && highConfidence) {
+            // IMMEDIATE SUCCESS!
+            gameWon = true;
+            gameActive = false;
+            const actualTime = 30 - timeLeft;
+            clearInterval(timer);
+            showImmediateSuccess(data, actualTime);
+        }
+        
+    } catch (error) {
+        console.warn("Real-time evaluation network error:", error);
+    } finally {
+        isEvaluating = false;
+    }
+}
+
+// Update the confidence display with real-time feedback
+function updateConfidenceDisplay(data) {
+    const confidenceDisplay = document.getElementById('confidence-display');
+    const confidenceValue = document.getElementById('confidence-value');
+    const confidenceStatus = document.getElementById('confidence-status');
+    
+    if (!confidenceDisplay || !confidenceValue || !confidenceStatus) return;
+    
+    const confidence = Math.round(data.confidence * 100);
+    const isCorrect = data.prediction.toLowerCase() === currentObject.toLowerCase();
+    
+    // Show the display
+    confidenceDisplay.style.opacity = '1';
+    
+    // Update confidence value
+    confidenceValue.textContent = `${confidence}%`;
+    
+    // Update status and styling based on correctness and confidence
+    if (isCorrect) {
+        if (confidence >= SUCCESS_THRESHOLD * 100) {
+            confidenceStatus.textContent = "🎉 RECOGNIZED!";
+            confidenceDisplay.style.background = "linear-gradient(135deg, #28a745, #20c997)";
+        } else {
+            confidenceStatus.textContent = `✅ ${data.prediction} (${SUCCESS_THRESHOLD * 100}% needed)`;
+            confidenceDisplay.style.background = "linear-gradient(135deg, #ffc107, #fd7e14)";
+        }
+    } else {
+        confidenceStatus.textContent = `🤔 Sees: ${data.prediction}`;
+        confidenceDisplay.style.background = "linear-gradient(135deg, #6c757d, #495057)";
+    }
+}
+
+// Show immediate success screen
+function showImmediateSuccess(data, actualTime) {
+    gameScreen.style.display = "none";
+    postGameScreen.style.display = "block";
+    
+    const confidence = Math.round(data.confidence * 100);
+    
+    // Get emojis
+    const emojiMap = {
+        'apple': '🍎', 'bowtie': '🎀', 'candle': '🕯️', 'door': '🚪', 'envelope': '✉️',
+        'fish': '🐟', 'guitar': '🎸', 'ice cream': '🍦', 'lightning': '⚡', 'moon': '🌙',
+        'mountain': '⛰️', 'star': '⭐', 'tent': '⛺', 'toothbrush': '🪥', 'wristwatch': '⌚'
+    };
+    
+    const emoji = emojiMap[currentObject] || '❓';
+    
+    const successHTML = `
+        <div style="text-align: center; padding: 30px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: linear-gradient(135deg, #28a745, #20c997); border-radius: 20px; color: white;">
+            <div style="font-size: 5em; margin-bottom: 20px;">🎉</div>
+            <h1 style="margin-bottom: 15px; font-size: 2.5em; font-weight: 700;">
+                AMAZING!
+            </h1>
+            <h2 style="margin-bottom: 25px; font-size: 1.8em; opacity: 0.9;">
+                AI Recognized Your ${emoji} ${currentObject.toUpperCase()}!
+            </h2>
+            
+            <div style="background: rgba(255,255,255,0.2); padding: 20px; border-radius: 15px; margin: 20px 0;">
+                <div style="font-size: 1.5em; font-weight: bold; margin-bottom: 10px;">
+                    ⚡ INSTANT RECOGNITION!
+                </div>
+                <div style="font-size: 1.2em; margin-bottom: 10px;">
+                    🎯 Confidence: ${confidence}% (needed ${SUCCESS_THRESHOLD * 100}%)
+                </div>
+                <div style="font-size: 1.2em;">
+                    ⏱️ Time: ${actualTime.toFixed(1)} seconds
+                </div>
+            </div>
+
+            <div style="background: rgba(255,255,255,0.15); padding: 15px; border-radius: 10px; margin: 20px 0;">
+                <div style="font-size: 1.1em; line-height: 1.5;">
+                    🚀 Perfect! The AI recognized your drawing immediately!<br>
+                    This is exactly how the real QuickDraw game works!
+                </div>
+            </div>
+
+            <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 10px; color: rgba(255,255,255,0.9); font-weight: 600;">
+                🎮 HYBRID AI: Real-time Recognition Powered by OpenCV + 64x64 Neural Network
+            </div>
+        </div>
+    `;
+    
+    modelGuessDisplay.innerHTML = successHTML;
 }
 
 // Drawing event listeners
@@ -206,6 +411,19 @@ function stopDrawing() {
         }
         
         currentStroke = [];
+        
+        // Trigger real-time evaluation after each stroke completion
+        if (gameActive && !gameWon) {
+            // Clear any pending evaluation
+            if (evaluationTimeout) {
+                clearTimeout(evaluationTimeout);
+            }
+            
+            // Schedule evaluation with slight delay to allow for multi-stroke drawings
+            evaluationTimeout = setTimeout(() => {
+                evaluateDrawingRealTime();
+            }, 500); // 500ms delay after stroke completion
+        }
     }
     drawing = false;
 }
@@ -224,15 +442,42 @@ function clearCanvas() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawingData = [];
     currentStroke = [];
+    
+    // Reset confidence display when clearing
+    const confidenceDisplay = document.getElementById('confidence-display');
+    const confidenceValue = document.getElementById('confidence-value');
+    const confidenceStatus = document.getElementById('confidence-status');
+    
+    if (confidenceDisplay && gameActive) {
+        confidenceDisplay.style.opacity = '0';
+    }
+    if (confidenceValue) {
+        confidenceValue.textContent = '0%';
+    }
+    if (confidenceStatus) {
+        confidenceStatus.textContent = 'Keep drawing...';
+    }
+    
+    // Clear any pending evaluations
+    if (evaluationTimeout) {
+        clearTimeout(evaluationTimeout);
+        evaluationTimeout = null;
+    }
 }
 
 // End game and get prediction
 async function endGame() {
+    // If game was already won through real-time recognition, don't process again
+    if (gameWon) {
+        return;
+    }
+    
+    gameActive = false;
     gameScreen.style.display = "none";
     postGameScreen.style.display = "block";
     
     // Show loading message
-    modelGuessDisplay.innerHTML = '<div style="color: #666;">🤔 Analyzing your drawing...</div>';
+    modelGuessDisplay.innerHTML = '<div style="color: #666;">🤔 Analyzing your final drawing...</div>';
     
     await sendDrawingData();
 }
@@ -435,6 +680,23 @@ async function restartGame() {
     timeLeftDisplay.textContent = timeLeft;
     timeLeftDisplay.style.color = '#333';
     drawingData = [];
+    gameActive = false;
+    gameWon = false;
+    currentConfidence = 0;
+    isEvaluating = false;
+    
+    // Clear any pending evaluations
+    if (evaluationTimeout) {
+        clearTimeout(evaluationTimeout);
+        evaluationTimeout = null;
+    }
+    
+    // Hide confidence display
+    const confidenceDisplay = document.getElementById('confidence-display');
+    if (confidenceDisplay) {
+        confidenceDisplay.style.opacity = '0';
+    }
+    
     clearCanvas();
     
     // Get a new object to draw
