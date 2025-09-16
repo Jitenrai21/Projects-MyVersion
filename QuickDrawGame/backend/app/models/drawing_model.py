@@ -10,7 +10,7 @@ import cv2
 # Get the absolute path to the improved 64x64 model file (HYBRID APPROACH)
 # Navigate from backend/app/models/ to project root, then to models/
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
-MODEL_PATH = os.path.join(PROJECT_ROOT, 'model_training', 'model_trad', 'QuickDraw_improved_64x64_final.keras')
+MODEL_PATH = os.path.join(PROJECT_ROOT, 'model_training', 'model_trad', 'QuickDraw_CALIBRATED_FINAL_64x64.keras')
 
 # Load the improved 64x64 QuickDraw model for HYBRID approach
 try:

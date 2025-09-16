@@ -39,7 +39,10 @@
         <h1> 🎨 QuickDraw!</h1>
         <div class="game-header">
             <p class="draw-instruction">Draw: <span id="current-object">🍎 Apple</span></p>
-            <p id="timer" class="timer">Time left: <span id="time-left">30</span> seconds</p>
+            <div class="game-info-row">
+                <p id="timer" class="timer">Time left: <span id="time-left">30</span> seconds</p>
+                <p id="ai-prediction" class="ai-prediction">AI sees: <span id="prediction-text">Start drawing...</span></p>
+            </div>
         </div>
         <canvas id="drawing-canvas"></canvas>
         <div id="controls">

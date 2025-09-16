@@ -9,6 +9,7 @@ const currentObjectDisplay = document.getElementById("current-object");
 const objectPlaceholder = document.getElementById("object-placeholder");
 const clearButton = document.getElementById("clear-button");
 const modelGuessDisplay = document.getElementById("model-guess");
+const predictionTextDisplay = document.getElementById("prediction-text");
 const canvas = document.getElementById("drawing-canvas");
 const ctx = canvas.getContext("2d");
 
@@ -26,8 +27,6 @@ let gameWon = false;
 let evaluationTimeout;
 let lastEvaluationTime = 0;
 const EVALUATION_DELAY = 1000; // 1 second delay between evaluations
-const SUCCESS_THRESHOLD = 0.7; // 70% confidence threshold for immediate success
-let currentConfidence = 0;
 let isEvaluating = false;
 
 // Array to hold the sequence of drawing coordinates with stroke information
@@ -50,6 +49,13 @@ ctx.lineWidth = 5;
 // API base URL - adjust if your backend runs on different port
 const API_BASE_URL = window.location.origin.includes('localhost') ? 
     'http://localhost:8000' : window.location.origin;
+
+// Global emoji mapping for all objects
+const emojiMap = {
+    'apple': '🍎', 'bowtie': '🎀', 'candle': '🕯️', 'door': '🚪', 'envelope': '✉️',
+    'fish': '🐟', 'guitar': '🎸', 'ice cream': '🍦', 'lightning': '⚡', 'moon': '🌙',
+    'mountain': '⛰️', 'star': '⭐', 'tent': '⛺', 'toothbrush': '🪥', 'wristwatch': '⌚'
+};
 
 // Initialize the game
 document.addEventListener('DOMContentLoaded', function() {
@@ -95,11 +101,6 @@ async function getNewObject() {
                 'apple', 'bowtie', 'candle', 'door', 'envelope', 'fish', 'guitar', 'ice cream', 'lightning', 'moon',
                 'mountain', 'star', 'tent', 'toothbrush', 'wristwatch'
             ];
-            const emojiMap = {
-                'apple': '🍎', 'bowtie': '🎀', 'candle': '🕯️', 'door': '🚪', 'envelope': '✉️',
-                'fish': '🐟', 'guitar': '🎸', 'ice cream': '🍦', 'lightning': '⚡', 'moon': '🌙',
-                'mountain': '⛰️', 'star': '⭐', 'tent': '⛺', 'toothbrush': '🪥', 'wristwatch': '⌚'
-            };
             currentObject = objects[Math.floor(Math.random() * objects.length)];
             const emoji = emojiMap[currentObject] || '❓';
             objectPlaceholder.textContent = `${emoji} ${currentObject.charAt(0).toUpperCase() + currentObject.slice(1)}`;
@@ -155,43 +156,15 @@ function startGame() {
     drawingData = [];
     gameActive = true;
     gameWon = false;
-    currentConfidence = 0;
     isEvaluating = false;
+    
+    // Reset prediction display
+    if (predictionTextDisplay) {
+        predictionTextDisplay.textContent = "Start drawing...";
+    }
+    
     clearCanvas();
     startTimer();
-    
-    // Add real-time confidence display if it doesn't exist
-    if (!document.getElementById('confidence-display')) {
-        addConfidenceDisplay();
-    }
-}
-
-// Add real-time confidence display to the UI
-function addConfidenceDisplay() {
-    const gameScreen = document.getElementById('game-screen');
-    const confidenceDiv = document.createElement('div');
-    confidenceDiv.id = 'confidence-display';
-    confidenceDiv.style.cssText = `
-        position: absolute;
-        top: 60px;
-        right: 20px;
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        color: white;
-        padding: 10px 15px;
-        border-radius: 10px;
-        font-weight: bold;
-        min-width: 150px;
-        text-align: center;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    `;
-    confidenceDiv.innerHTML = `
-        <div style="font-size: 0.8em; margin-bottom: 2px;">🤖 AI Confidence</div>
-        <div id="confidence-value" style="font-size: 1.2em;">0%</div>
-        <div id="confidence-status" style="font-size: 0.7em; margin-top: 2px;">Keep drawing...</div>
-    `;
-    gameScreen.appendChild(confidenceDiv);
 }
 
 // Real-time drawing evaluation with debouncing
@@ -235,16 +208,22 @@ async function evaluateDrawingRealTime() {
             return;
         }
 
-        // Update confidence display
-        currentConfidence = data.confidence;
-        updateConfidenceDisplay(data);
+        // NEW SUCCESS LOGIC: Check if highest confidence prediction matches current object
+        const highestPrediction = data.prediction.toLowerCase();
+        const targetObject = currentObject.toLowerCase();
+        const isCorrectPrediction = highestPrediction === targetObject;
         
-        // Check for success condition
-        const isCorrect = data.prediction.toLowerCase() === currentObject.toLowerCase();
-        const highConfidence = data.confidence >= SUCCESS_THRESHOLD;
+        // Update AI prediction display (object name only, no confidence)
+        if (predictionTextDisplay && gameActive) {
+            const emoji = emojiMap[highestPrediction] || '🤔';
+            const capitalizedPrediction = highestPrediction.charAt(0).toUpperCase() + highestPrediction.slice(1);
+            const displayText = `${emoji} ${capitalizedPrediction}`;
+            predictionTextDisplay.textContent = displayText;
+            console.log('AI prediction updated:', displayText); // Debug log
+        }
         
-        if (isCorrect && highConfidence) {
-            // IMMEDIATE SUCCESS!
+        if (isCorrectPrediction) {
+            // SUCCESS! Highest confidence prediction matches target
             gameWon = true;
             gameActive = false;
             const actualTime = 30 - timeLeft;
@@ -259,85 +238,29 @@ async function evaluateDrawingRealTime() {
     }
 }
 
-// Update the confidence display with real-time feedback
-function updateConfidenceDisplay(data) {
-    const confidenceDisplay = document.getElementById('confidence-display');
-    const confidenceValue = document.getElementById('confidence-value');
-    const confidenceStatus = document.getElementById('confidence-status');
-    
-    if (!confidenceDisplay || !confidenceValue || !confidenceStatus) return;
-    
-    const confidence = Math.round(data.confidence * 100);
-    const isCorrect = data.prediction.toLowerCase() === currentObject.toLowerCase();
-    
-    // Show the display
-    confidenceDisplay.style.opacity = '1';
-    
-    // Update confidence value
-    confidenceValue.textContent = `${confidence}%`;
-    
-    // Update status and styling based on correctness and confidence
-    if (isCorrect) {
-        if (confidence >= SUCCESS_THRESHOLD * 100) {
-            confidenceStatus.textContent = "🎉 RECOGNIZED!";
-            confidenceDisplay.style.background = "linear-gradient(135deg, #28a745, #20c997)";
-        } else {
-            confidenceStatus.textContent = `✅ ${data.prediction} (${SUCCESS_THRESHOLD * 100}% needed)`;
-            confidenceDisplay.style.background = "linear-gradient(135deg, #ffc107, #fd7e14)";
-        }
-    } else {
-        confidenceStatus.textContent = `🤔 Sees: ${data.prediction}`;
-        confidenceDisplay.style.background = "linear-gradient(135deg, #6c757d, #495057)";
-    }
-}
-
 // Show immediate success screen
 function showImmediateSuccess(data, actualTime) {
     gameScreen.style.display = "none";
     postGameScreen.style.display = "block";
     
-    const confidence = Math.round(data.confidence * 100);
-    
-    // Get emojis
-    const emojiMap = {
-        'apple': '🍎', 'bowtie': '🎀', 'candle': '🕯️', 'door': '🚪', 'envelope': '✉️',
-        'fish': '🐟', 'guitar': '🎸', 'ice cream': '🍦', 'lightning': '⚡', 'moon': '🌙',
-        'mountain': '⛰️', 'star': '⭐', 'tent': '⛺', 'toothbrush': '🪥', 'wristwatch': '⌚'
-    };
-    
+    // Get emoji from global mapping
     const emoji = emojiMap[currentObject] || '❓';
     
     const successHTML = `
-        <div style="text-align: center; padding: 30px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: linear-gradient(135deg, #28a745, #20c997); border-radius: 20px; color: white;">
-            <div style="font-size: 5em; margin-bottom: 20px;">🎉</div>
-            <h1 style="margin-bottom: 15px; font-size: 2.5em; font-weight: 700;">
+        <div style="text-align: center; padding: 40px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: linear-gradient(135deg, #28a745, #20c997); border-radius: 20px; color: white;">
+            <div style="font-size: 6em; margin-bottom: 30px;">🎉</div>
+            <h1 style="margin-bottom: 20px; font-size: 3em; font-weight: 700;">
                 AMAZING!
             </h1>
-            <h2 style="margin-bottom: 25px; font-size: 1.8em; opacity: 0.9;">
+            <h2 style="margin-bottom: 30px; font-size: 2em; opacity: 0.9;">
                 AI Recognized Your ${emoji} ${currentObject.toUpperCase()}!
             </h2>
             
-            <div style="background: rgba(255,255,255,0.2); padding: 20px; border-radius: 15px; margin: 20px 0;">
-                <div style="font-size: 1.5em; font-weight: bold; margin-bottom: 10px;">
-                    ⚡ INSTANT RECOGNITION!
+            <div style="background: rgba(255,255,255,0.15); padding: 20px; border-radius: 15px; margin: 20px 0;">
+                <div style="font-size: 1.3em; line-height: 1.6;">
+                    🚀 Perfect! The AI recognized your drawing!<br>
+                    Great job on your artistic skills! 🎨
                 </div>
-                <div style="font-size: 1.2em; margin-bottom: 10px;">
-                    🎯 Confidence: ${confidence}% (needed ${SUCCESS_THRESHOLD * 100}%)
-                </div>
-                <div style="font-size: 1.2em;">
-                    ⏱️ Time: ${actualTime.toFixed(1)} seconds
-                </div>
-            </div>
-
-            <div style="background: rgba(255,255,255,0.15); padding: 15px; border-radius: 10px; margin: 20px 0;">
-                <div style="font-size: 1.1em; line-height: 1.5;">
-                    🚀 Perfect! The AI recognized your drawing immediately!<br>
-                    This is exactly how the real QuickDraw game works!
-                </div>
-            </div>
-
-            <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 10px; color: rgba(255,255,255,0.9); font-weight: 600;">
-                🎮 HYBRID AI: Real-time Recognition Powered by OpenCV + 64x64 Neural Network
             </div>
         </div>
     `;
@@ -443,19 +366,9 @@ function clearCanvas() {
     drawingData = [];
     currentStroke = [];
     
-    // Reset confidence display when clearing
-    const confidenceDisplay = document.getElementById('confidence-display');
-    const confidenceValue = document.getElementById('confidence-value');
-    const confidenceStatus = document.getElementById('confidence-status');
-    
-    if (confidenceDisplay && gameActive) {
-        confidenceDisplay.style.opacity = '0';
-    }
-    if (confidenceValue) {
-        confidenceValue.textContent = '0%';
-    }
-    if (confidenceStatus) {
-        confidenceStatus.textContent = 'Keep drawing...';
+    // Reset prediction display when clearing
+    if (predictionTextDisplay && gameActive) {
+        predictionTextDisplay.textContent = "Start drawing...";
     }
     
     // Clear any pending evaluations
@@ -556,118 +469,52 @@ async function sendDrawingData() {
     }
 }
 
-// Display detailed prediction results
+// Display simplified prediction results
 function displayPredictionResults(data) {
-    console.log("🔍 Raw prediction data received:", data); // Debug log
-    
     const prediction = data.prediction;
     const expectedObject = data.expected_object;
     const isCorrect = data.is_correct;
-    const confidence = Math.round(data.confidence * 100);
-    const topPredictions = data.top_predictions || {};
 
-    console.log("🎯 Processed data:", { prediction, expectedObject, isCorrect, confidence, topPredictions }); // Debug log
-
-    // Get emojis for all 15 classes
-    const emojiMap = {
-        'apple': '🍎', 'bowtie': '🎀', 'candle': '🕯️', 'door': '🚪', 'envelope': '✉️',
-        'fish': '🐟', 'guitar': '🎸', 'ice cream': '🍦', 'lightning': '⚡', 'moon': '🌙',
-        'mountain': '⛰️', 'star': '⭐', 'tent': '⛺', 'toothbrush': '🪥', 'wristwatch': '⌚'
-    };
-    
+    // Get emojis from global mapping
     const predEmoji = emojiMap[prediction] || '❓';
     const expectedEmoji = emojiMap[expectedObject] || '❓';
     const resultEmoji = isCorrect ? '🎉' : '😅';
 
-    console.log("🎨 Emojis:", { predEmoji, expectedEmoji, resultEmoji }); // Debug log
-
-    // Create top predictions HTML with better styling for 15 classes
-    let topPredictionsHTML = '';
-    const topEntries = Object.entries(topPredictions).slice(0, 3);
-    if (topEntries.length > 0) {
-        topPredictionsHTML = `
-            <div style="background: linear-gradient(135deg, #f8f9fa, #e9ecef); padding: 15px; border-radius: 12px; margin: 15px 0; border: 1px solid #dee2e6;">
-                <div style="font-weight: bold; color: #495057; margin-bottom: 8px;">🏆 AI's Top 3 Guesses:</div>
-                ${topEntries.map(([className, conf], index) => {
-                    const emoji = emojiMap[className] || '❓';
-                    const percentage = Math.round(conf * 100);
-                    const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : '🥉';
-                    const isWinner = className === prediction;
-                    return `
-                        <div style="margin: 5px 0; padding: 5px; ${isWinner ? 'background: rgba(76, 175, 80, 0.1); border-radius: 6px; font-weight: bold;' : ''}">
-                            ${medal} ${emoji} ${className.charAt(0).toUpperCase() + className.slice(1)}: ${percentage}%
-                        </div>
-                    `;
-                }).join('')}
-            </div>
-        `;
-    } else {
-        // Fallback if no top predictions available
-        topPredictionsHTML = `
-            <div style="background: #fff3cd; padding: 10px; border-radius: 8px; margin: 10px 0; border: 1px solid #ffeaa7;">
-                <small>🤖 AI Analysis: Single prediction made</small>
-            </div>
-        `;
-    }
-
-    // Enhanced result HTML - HYBRID APPROACH VERSION
+    // Simple and clean result HTML
     const resultHTML = `
-        <div style="text-align: center; padding: 25px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: linear-gradient(135deg, #f8f9fa, #ffffff); border-radius: 20px;">
-            <div style="font-size: 4em; margin-bottom: 15px;">${resultEmoji}</div>
-            <h2 style="margin-bottom: 25px; color: ${isCorrect ? '#28a745' : '#6c757d'}; font-size: 2em; font-weight: 700;">
-                ${isCorrect ? '🎯 PERFECT MATCH!' : '🎨 NICE TRY!'}
+        <div style="text-align: center; padding: 40px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: linear-gradient(135deg, ${isCorrect ? '#28a745, #20c997' : '#6c757d, #495057'}); border-radius: 20px; color: white;">
+            <div style="font-size: 6em; margin-bottom: 30px;">${resultEmoji}</div>
+            <h2 style="margin-bottom: 30px; font-size: 3em; font-weight: 700;">
+                ${isCorrect ? 'PERFECT!' : 'NICE TRY!'}
             </h2>
             
-            <div style="background: #ffffff; padding: 25px; border-radius: 15px; margin: 20px 0; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 2px solid #e9ecef;">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
-                    <div style="text-align: center; padding: 15px; background: #e3f2fd; border-radius: 10px;">
-                        <div style="font-weight: bold; color: #1976d2; margin-bottom: 5px;">🎯 TARGET</div>
-                        <div style="font-size: 2em;">${expectedEmoji}</div>
-                        <div style="font-size: 1.1em; font-weight: 600; color: #1976d2;">${expectedObject.toUpperCase()}</div>
+            <div style="background: rgba(255,255,255,0.15); padding: 25px; border-radius: 15px; margin: 25px 0;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px;">
+                    <div style="text-align: center;">
+                        <div style="font-weight: bold; margin-bottom: 10px; font-size: 1.1em;">🎯 YOU DREW</div>
+                        <div style="font-size: 3em; margin-bottom: 10px;">${expectedEmoji}</div>
+                        <div style="font-size: 1.3em; font-weight: 600;">${expectedObject.toUpperCase()}</div>
                     </div>
-                    <div style="text-align: center; padding: 15px; background: #e8f5e8; border-radius: 10px;">
-                        <div style="font-weight: bold; color: #388e3c; margin-bottom: 5px;">🤖 AI GUESS</div>
-                        <div style="font-size: 2em;">${predEmoji}</div>
-                        <div style="font-size: 1.1em; font-weight: 600; color: #388e3c;">${prediction.toUpperCase()}</div>
-                    </div>
-                </div>
-
-                <div style="margin: 25px 0;">
-                    <div style="font-size: 1.3em; font-weight: bold; margin-bottom: 10px; color: ${confidence > 40 ? '#28a745' : confidence > 20 ? '#ffc107' : '#dc3545'};">
-                        🎯 CONFIDENCE: ${confidence}%
-                    </div>
-                    <div style="background: #e9ecef; height: 12px; border-radius: 6px; overflow: hidden;">
-                        <div style="background: ${confidence > 40 ? '#28a745' : confidence > 20 ? '#ffc107' : '#dc3545'}; height: 100%; width: ${confidence}%; transition: width 1s ease; border-radius: 6px;"></div>
+                    <div style="text-align: center;">
+                        <div style="font-weight: bold; margin-bottom: 10px; font-size: 1.1em;">🤖 AI SAW</div>
+                        <div style="font-size: 3em; margin-bottom: 10px;">${predEmoji}</div>
+                        <div style="font-size: 1.3em; font-weight: 600;">${prediction.toUpperCase()}</div>
                     </div>
                 </div>
             </div>
 
-            ${topPredictionsHTML}
-
-            <div style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 20px; border-radius: 15px; margin: 20px 0;">
-                <div style="font-size: 1.1em; line-height: 1.5;">
+            <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 15px; margin: 20px 0;">
+                <div style="font-size: 1.3em; line-height: 1.6;">
                     ${isCorrect 
-                        ? "🌟 AMAZING! Your drawing was crystal clear!" 
-                        : confidence > 30 
-                            ? `🎨 Great effort! The AI was ${confidence}% sure. Try emphasizing key features!`
-                            : "🤔 Tricky one! Remember to draw the most recognizable parts clearly!"
+                        ? "🌟 Excellent drawing! The AI recognized it perfectly!" 
+                        : "🎨 Keep practicing! Try to emphasize the key features next time!"
                     }
                 </div>
-            </div>
-
-            <div style="background: rgba(76, 175, 80, 0.1); padding: 15px; border-radius: 10px; color: #388e3c; font-weight: 600; margin: 15px 0;">
-                🚀 HYBRID AI: OpenCV + 64x64 Neural Network
-            </div>
-            
-            <div style="background: rgba(102, 126, 234, 0.1); padding: 15px; border-radius: 10px; color: #667eea; font-weight: 600;">
-                🎮 QuickDraw Challenge: 15 Object Categories Available!
             </div>
         </div>
     `;
 
-    console.log("✅ Setting result HTML"); // Debug log
     modelGuessDisplay.innerHTML = resultHTML;
-    console.log("✅ Result HTML set successfully"); // Debug log
 }
 
 // Restart game
@@ -682,8 +529,12 @@ async function restartGame() {
     drawingData = [];
     gameActive = false;
     gameWon = false;
-    currentConfidence = 0;
     isEvaluating = false;
+    
+    // Reset prediction display
+    if (predictionTextDisplay) {
+        predictionTextDisplay.textContent = "Start drawing...";
+    }
     
     // Clear any pending evaluations
     if (evaluationTimeout) {
