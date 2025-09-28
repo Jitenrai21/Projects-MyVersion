@@ -15,15 +15,15 @@ try:
     from modules.camera_capture_thread import CameraCaptureThread  
     from modules.yolo_inference_thread import YOLOInferenceThread
     from modules.audio_manager_thread import AudioManager
-    print("✅ All threading modules imported successfully")
+    print("All threading modules imported successfully")
 except ImportError as e:
-    print(f"❌ Import error: {e}")
+    print(f"Import error: {e}")
     sys.exit(1)
 
 
 def test_game_state_thread_safety():
     """Test ThreadSafeGameState under concurrent access"""
-    print("\n🧪 Testing ThreadSafeGameState thread safety...")
+    print("\nTesting ThreadSafeGameState thread safety...")
     
     game_state = ThreadSafeGameState()
     
@@ -65,14 +65,14 @@ def test_game_state_thread_safety():
     print(f"   Execution time: {end_time - start_time:.2f}s")
     
     success = game_state.score == 200
-    print(f"   Result: {'✅ PASS' if success else '❌ FAIL'}")
+    print(f"   Result: {'PASS' if success else 'FAIL'}")
     
     return success
 
 
 def test_camera_thread_mock():
     """Test camera thread with mock functionality"""
-    print("\n📷 Testing camera thread (mock mode)...")
+    print("\nTesting camera thread (mock mode)...")
     
     # Mock camera for testing
     import cv2
@@ -135,7 +135,7 @@ def test_camera_thread_mock():
         print(f"   Thread running: {debug_info['running']}")
         
         success = frame is not None and debug_info['fps'] > 0
-        print(f"   Result: {'✅ PASS' if success else '❌ FAIL'}")
+        print(f"   Result: {'PASS' if success else 'FAIL'}")
         
         return success
         
@@ -146,7 +146,7 @@ def test_camera_thread_mock():
 
 def test_audio_thread():
     """Test audio manager thread"""
-    print("\n🎵 Testing audio manager thread...")
+    print("\nTesting audio manager thread...")
     
     try:
         import pygame
@@ -174,13 +174,12 @@ def test_audio_thread():
         audio_manager.join(timeout=2)
         
         success = len(debug_info['loaded_sounds']) >= 0  # At least attempt to load
-        print(f"   Result: {'✅ PASS' if success else '❌ FAIL'}")
-        
+        print(f"   Result: {'PASS' if success else 'FAIL'}")
         return success
         
     except Exception as e:
         print(f"   Audio test failed: {e}")
-        print(f"   Result: ⚠️  SKIP (audio not available)")
+        print(f"   Result: SKIP (audio not available)")
         return True  # Don't fail entire test due to audio issues
 
 
@@ -210,14 +209,14 @@ def test_performance_comparison():
     print(f"   Sequential approach: {sequential_fps:.1f} FPS")
     print(f"   Parallel approach: {parallel_fps:.1f} FPS") 
     print(f"   Theoretical improvement: {improvement:.1f}%")
-    print(f"   Result: {'✅ SIGNIFICANT IMPROVEMENT' if improvement > 50 else '⚠️  MODERATE IMPROVEMENT'}")
+    print(f"   Result: {'SIGNIFICANT IMPROVEMENT' if improvement > 50 else 'MODERATE IMPROVEMENT'}")
     
     return improvement > 0
 
 
 def main():
     """Run all threading tests"""
-    print("🚀 Testing Threaded Interactive Projector Camera Game")
+    print("Testing Threaded Interactive Projector Camera Game")
     print("=" * 60)
     
     tests = [
@@ -234,28 +233,28 @@ def main():
             result = test_func()
             results.append((test_name, result))
         except Exception as e:
-            print(f"   ❌ FATAL ERROR in {test_name}: {e}")
+            print(f"   FATAL ERROR in {test_name}: {e}")
             results.append((test_name, False))
     
     # Summary
     print("\n" + "=" * 60)
-    print("📊 Test Results Summary:")
+    print("Test Results Summary:")
     
     passed = sum(1 for _, result in results if result)
     total = len(results)
     
     for test_name, result in results:
-        status = "✅ PASS" if result else "❌ FAIL"
+        status = "PASS" if result else "FAIL"
         print(f"   {status} - {test_name}")
     
     print(f"\nOverall: {passed}/{total} tests passed ({passed/total*100:.1f}%)")
     
     if passed == total:
-        print("\n🎉 All tests passed! Threading implementation is working correctly.")
+        print("\nAll tests passed! Threading implementation is working correctly.")
         print("\nYou can now run: python main_threaded.py")
     else:
-        print("\n⚠️  Some tests failed. Check the implementation before running the main application.")
-        
+        print("\nSome tests failed. Check the implementation before running the main application.")
+
     return passed == total
 
 

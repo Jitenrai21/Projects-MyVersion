@@ -64,17 +64,17 @@ class AudioManager(threading.Thread):
                 sound = pygame.mixer.Sound(path)
                 sound.set_volume(self.sfx_volume * self.master_volume)
                 self.sounds[sound_name] = sound
-                print(f"🔊 Loaded sound: {sound_name}")
+                print(f"Loaded sound: {sound_name}")
                 return True
             else:
-                print(f"⚠️  Sound file not found: {path}")
+                print(f"Warning: Sound file not found: {path}")
         except Exception as e:
-            print(f"❌ Failed to load sound {filename}: {e}")
+            print(f"Error: Failed to load sound {filename}: {e}")
         return False
     
     def run(self):
         """Main audio processing loop"""
-        print("🎵 Audio manager thread started")
+        print("Audio manager thread started")
         
         while self.running and self.game_state.running:
             try:
@@ -86,11 +86,11 @@ class AudioManager(threading.Thread):
                     continue
                     
             except Exception as e:
-                print(f"⚠️  Error in audio manager thread: {e}")
+                print(f"Error in audio manager thread: {e}")
                 time.sleep(0.1)
-        
-        print("🔴 Audio manager thread stopped")
-    
+
+        print("Audio manager thread stopped")
+
     def _process_audio_request(self, request: dict):
         """Process an audio playback request"""
         try:
@@ -110,7 +110,7 @@ class AudioManager(threading.Thread):
                     sound.play()
                 
         except Exception as e:
-            print(f"⚠️  Error processing audio request: {e}")
+            print(f"Error processing audio request: {e}")
     
     # Public interface methods
     def play_sound(self, sound_name: str, volume: float = 1.0, priority: str = 'normal'):

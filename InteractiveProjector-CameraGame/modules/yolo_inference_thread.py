@@ -47,9 +47,9 @@ class YOLOInferenceThread(threading.Thread):
             sys.stdout = open(os.devnull, 'w')
             self.model = YOLO(model_path, task="detect", verbose=False)
             sys.stdout = original_stdout
-            print(f"✅ YOLO model loaded successfully: {model_path}")
+            print(f"YOLO model loaded successfully: {model_path}")
         except Exception as e:
-            print(f"❌ Error loading YOLO model: {e}")
+            print(f"Error loading YOLO model: {e}")
             raise
         
         # Compute inverse transform for coordinate mapping
@@ -58,13 +58,13 @@ class YOLOInferenceThread(threading.Thread):
             try:
                 self.inv_transform_matrix = np.linalg.inv(self.transform_matrix)
             except np.linalg.LinAlgError:
-                print("⚠️  Warning: Could not compute inverse transform matrix")
+                print("Warning: Could not compute inverse transform matrix")
         
         self.running = True
     
     def run(self):
         """Main inference loop"""
-        print("🎯 YOLO inference thread started")
+        print("YOLO inference thread started")
         
         while self.running and self.game_state.running:
             try:
@@ -110,10 +110,10 @@ class YOLOInferenceThread(threading.Thread):
                 self._update_fps()
                 
             except Exception as e:
-                print(f"⚠️  Error in YOLO inference thread: {e}")
+                print(f"Error in YOLO inference thread: {e}")
                 time.sleep(0.1)  # Prevent tight error loop
         
-        print("🔴 YOLO inference thread stopped")
+        print("YOLO inference thread stopped")
     
     def _run_inference(self, frame):
         """Run YOLO inference on frame and return detections"""
@@ -154,7 +154,7 @@ class YOLOInferenceThread(threading.Thread):
             return detections
             
         except Exception as e:
-            print(f"⚠️  Error running YOLO inference: {e}")
+            print(f"Error running YOLO inference: {e}")
             return []
     
     def _transform_coordinates(self, x, y):

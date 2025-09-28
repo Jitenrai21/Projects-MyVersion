@@ -39,7 +39,7 @@ class CameraCaptureThread(threading.Thread):
         # Initialize camera
         self.cap = cv2.VideoCapture(self.camera_index, cv2.CAP_DSHOW)
         if not self.cap.isOpened():
-            raise RuntimeError(f"❌ Error: Could not open camera {self.camera_index}")
+            raise RuntimeError(f"Error: Could not open camera {self.camera_index}")
         
         # Configure camera settings
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
@@ -55,7 +55,7 @@ class CameraCaptureThread(threading.Thread):
     
     def run(self):
         """Main capture loop with fps control and error handling"""
-        print("🎥 Camera capture thread started")
+        print("Camera capture thread started")
         last_frame_time = time.time()
         
         while self.running and self.game_state.running:
@@ -86,17 +86,17 @@ class CameraCaptureThread(threading.Thread):
                     last_frame_time = current_time
                     
                 else:
-                    print("⚠️  Warning: Failed to capture frame")
+                    print("Warning: Failed to capture frame")
                     self.dropped_frames += 1
                     time.sleep(0.1)  # Wait longer on failure
                     
             except Exception as e:
-                print(f"⚠️  Error in camera capture thread: {e}")
+                print(f"Error in camera capture thread: {e}")
                 time.sleep(0.1)  # Prevent tight error loop
         
         # Cleanup
         self.cap.release()
-        print("🔴 Camera capture thread stopped")
+        print("Camera capture thread stopped")
     
     def _update_fps(self):
         """Update FPS calculation and report to game state"""
