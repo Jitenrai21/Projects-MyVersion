@@ -46,7 +46,7 @@ FPS = 90
 CONF_THRESHOLD = 0.5
 IOU_THRESHOLD = 0.7
 CLICK_COOLDOWN = 0.5
-CAMERA_INDEX = 0
+CAMERA_INDEX = 1
 BALLOON_FILES = ["balloon1.png", "balloon2.png", "balloon3.png"]
 GAME_DURATION = 120
 
@@ -172,6 +172,7 @@ class ThreadedBalloonGame:
         if calibration_points and len(calibration_points) == 4:
             print(f"📐 Loading existing calibration...")
             self.transform_matrix = get_perspective_transform(calibration_points, 0, 0)
+            self.inv_transform_matrix = np.linalg.inv(self.transform_matrix)  # For manual clicks
             self.offset_x, self.offset_y = offset_x, offset_y
             self.debug_offset_x, self.debug_offset_y = debug_offset_x, debug_offset_y
         else:
@@ -191,6 +192,7 @@ class ThreadedBalloonGame:
                 save_calibration_points(calibration_points, self.offset_x, self.offset_y, 
                                       self.debug_offset_x, self.debug_offset_y)
                 self.transform_matrix = get_perspective_transform(calibration_points, 0, 0)
+                self.inv_transform_matrix = np.linalg.inv(self.transform_matrix)  # For manual clicks
             else:
                 print("❌ Error: Calibration failed")
                 sys.exit(1)
@@ -208,7 +210,12 @@ class ThreadedBalloonGame:
         self.YELLOW = (255, 255, 0)
         self.GREEN = (0, 255, 0)
         
-        # Game objects
+        # Zone management for balloon spawning (must be before creating balloons)
+        self.ZONE_COUNT = 5
+        self.zone_width = self.actual_width // self.ZONE_COUNT
+        self.occupied_zones = set()
+        
+        # Game objects (now that zone variables are defined)
         self.balloons = [self.create_balloon() for _ in range(1)]
         self.cracks = []
         self.misses = []
@@ -221,11 +228,6 @@ class ThreadedBalloonGame:
         self.game_over_y = -100
         self.game_over_target_y = SCREEN_HEIGHT // 2 - 80
         self.game_over_start_time = None
-        
-        # Zone management for balloon spawning
-        self.ZONE_COUNT = 5
-        self.zone_width = self.actual_width // self.ZONE_COUNT
-        self.occupied_zones = set()
     
     def create_balloon(self):
         """Create a new balloon instance"""
@@ -331,7 +333,12 @@ class ThreadedBalloonGame:
                 return False
                 
             elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_q:
+                if self.game_state.start_screen_active:
+                    # Start game on any keypress (like original)
+                    self.game_state.start_screen_active = False
+                    self.game_state.game_started = True
+                    self.game_state.start_time = time.time()
+                elif event.key == pygame.K_q:
                     return False
                 elif event.key == pygame.K_c:
                     self._recalibrate()
@@ -344,10 +351,34 @@ class ThreadedBalloonGame:
                         return False
                         
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                if not self.game_state.game_over:
-                    mx, my = event.pos
-                    if self.game_state.add_click_event(mx, my, 'manual'):
-                        self._process_click(mx, my, 'manual')
+                if self.game_state.start_screen_active:
+                    # Start game on mouse click (like original)
+                    self.game_state.start_screen_active = False
+                    self.game_state.game_started = True
+                    self.game_state.start_time = time.time()
+                elif not self.game_state.game_over:
+                    # Manual click with inverse perspective transform (like original)
+                    current_time = time.time()
+                    
+                    # Check cooldown directly (consistent with detection handling)
+                    if current_time - self.game_state.last_click_time >= CLICK_COOLDOWN:
+                        mx, my = event.pos
+                        
+                        # Apply inverse perspective transform to convert to warped coordinates
+                        point = np.float32([[[mx, my]]])
+                        warped_point = cv2.perspectiveTransform(point, self.inv_transform_matrix)[0][0]
+                        cx, cy = warped_point
+                        
+                        # Check if click is within valid game area
+                        if 0 <= cx <= self.external_screen.width and 0 <= cy <= self.external_screen.height:
+                            # Process click directly (consistent with detection handling)
+                            self._process_click(mx, my, 'manual')
+                            self.game_state.last_click_time = current_time
+                            print(f"🎯 Manual click processed: ({mx}, {my}) -> warped ({cx:.1f}, {cy:.1f})")
+                        else:
+                            print(f"🚫 Click outside game area: ({mx}, {my}) -> warped ({cx:.1f}, {cy:.1f})")
+                    else:
+                        print(f"⏱️ Click ignored due to cooldown ({current_time - self.game_state.last_click_time:.2f}s < {CLICK_COOLDOWN}s)")
         
         return True
     
@@ -367,6 +398,7 @@ class ThreadedBalloonGame:
         if calibration_points and len(calibration_points) == 4:
             save_calibration_points(calibration_points, 0, 0, 0, 0)
             self.transform_matrix = get_perspective_transform(calibration_points, 0, 0)
+            self.inv_transform_matrix = np.linalg.inv(self.transform_matrix)  # Update inverse matrix
             print("✅ Recalibration completed")
             
             # Restart camera thread
@@ -589,7 +621,60 @@ class ThreadedBalloonGame:
             self.game_state.update_fps(game_fps=fps)
             self.fps_counter = 0
             self.fps_start_time = current_time
+            self.fps_start_time = current_time
     
+    def render_debug_window(self):
+        """Render debug window showing camera feed with detections (like original)"""
+        # Get latest frame from camera thread
+        frame_data = self.game_state.get_current_frame()
+        if frame_data is None:
+            return
+        
+        frame, timestamp = frame_data
+        
+        # Apply perspective transform like original
+        warped_frame = cv2.warpPerspective(frame, self.transform_matrix, 
+                                         (self.external_screen.width, self.external_screen.height))
+        
+        # Resize for debug display
+        debug_view = cv2.resize(warped_frame, (SCREEN_WIDTH, SCREEN_HEIGHT))
+        
+        # Draw ROI boundary like original
+        roi_points = np.float32([[0, 0], [self.external_screen.width-1, 0], 
+                                [self.external_screen.width-1, self.external_screen.height-1], 
+                                [0, self.external_screen.height-1]])
+        roi_points = roi_points.astype(np.int32).reshape((-1, 1, 2))
+        cv2.polylines(debug_view, [roi_points], True, (255, 0, 0), 2)
+        
+        # Draw detection boxes from YOLO thread
+        detections = self.game_state.get_latest_detections()
+        for detection in detections:
+            cx, cy = detection.x, detection.y
+            confidence = detection.confidence
+            
+            # Scale coordinates for debug display
+            scale_x = SCREEN_WIDTH / self.external_screen.width
+            scale_y = SCREEN_HEIGHT / self.external_screen.height
+            
+            cx_scaled = int(cx * scale_x)
+            cy_scaled = int(cy * scale_y)
+            
+            # Create a virtual bounding box around the center point (since we only store center)
+            box_size = 40  # Virtual box size
+            x1_scaled = cx_scaled - box_size // 2
+            y1_scaled = cy_scaled - box_size // 2
+            x2_scaled = cx_scaled + box_size // 2
+            y2_scaled = cy_scaled + box_size // 2
+            
+            # Draw detection box and center point like original
+            cv2.rectangle(debug_view, (x1_scaled, y1_scaled), (x2_scaled, y2_scaled), (0, 255, 0), 2)
+            cv2.circle(debug_view, (cx_scaled, cy_scaled), 5, (0, 0, 255), -1)
+            cv2.putText(debug_view, f"Green Ball: {confidence:.2f}", (x1_scaled, y1_scaled - 10),
+                       cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+        
+        # Show debug window like original
+        cv2.imshow("Camera Feed", debug_view)
+
     def run(self):
         """Main game loop"""
         if not self.start_threads():
@@ -608,6 +693,13 @@ class ThreadedBalloonGame:
                 
                 # Render frame
                 self.render_frame()
+                
+                # Render debug window (like original)
+                self.render_debug_window()
+                
+                # Check for cv2 window quit (like original)
+                if cv2.waitKey(1) & 0xFF == ord('q'):
+                    running = False
                 
                 # Update FPS
                 self.update_fps_counter()
